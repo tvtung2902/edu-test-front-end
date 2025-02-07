@@ -15,8 +15,11 @@ export default function QuestionContent() {
         loading: false
     })
 
+<<<<<<< HEAD
     const dataQuestion
 
+=======
+>>>>>>> main
     const onSearch = (value, _e, info) => console.log(info?.source, value);
 
     const handleOpenAdd = () => {

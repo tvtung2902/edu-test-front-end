@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+:root {
+  --color-text-main: rgba(0, 0, 0, 0.87);
+  --color-text-other: #686868;
+  --color-main: #1677FF;  
+  --font:  "Raleway", serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--color-text-main);
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+  padding: 0;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+}
+
+th, td {
+  margin: 0; 
+  padding: 0;
+  border: none;  
+  text-align: left;
+}
+
+input {
+  border: 0;
+  padding: 0;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+a {
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1150px;
+  margin-right: auto;
+  margin-left: auto;
+}
+@media (max-width: 1200px) {
+  .container {
+    max-width: 690px;
+  }
+}
+@media (max-width: 840px) {
+  .container {
+    max-width: 315px;
+  }
+}
+
+.button-one {
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
+  padding: 10px 21px;
+  text-align: center;
+}
