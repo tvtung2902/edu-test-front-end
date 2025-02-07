@@ -97,3 +97,14 @@
     }
 
 }
+
+.contentPopOverFilter{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    &__btn{
+        width: fit-content;
+        align-self: self-end;
+    }
+}

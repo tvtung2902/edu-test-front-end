@@ -1,9 +1,9 @@
-import { Button, Radio, Tooltip, Modal, Input  } from "antd";
+import { Button, Radio, Tooltip, Modal, Input } from "antd";
 import { DeleteOutlined, EditOutlined, FilterOutlined, QuestionCircleOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { useState } from "react";
 const { Search } = Input;
 
-export default function Category(){
+export default function Category() {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const showLoading = () => {
@@ -28,7 +28,7 @@ export default function Category(){
                     </div>
                 </div>
             </section>
-            
+
             <section className="categories">
                 <div className="categories__wrapper container">
                     <div className="categories__item">
@@ -37,26 +37,26 @@ export default function Category(){
                             <p>Nội dung danh mục 1</p>
                         </div>
                         <div className="questions__actions">
-                                <Tooltip title="Sửa">
-                                    <EditOutlined style={{ fontSize: '25px', color: '#1677FF' }} onClick={showLoading} />
-                                </Tooltip>
-                                <Modal
-                                        title={<p>Chỉnh sửa câu hỏi</p>}
-                                        footer={
-                                            <Button type="primary" onClick={() => setOpen(false)}>
-                                                Ok
-                                            </Button>
-                                        }
-                                        loading={loading}
-                                        open={open}
-                                        onCancel={() => setOpen(false)}
-                                    >
-                                        
-                                </Modal>
-                                <Tooltip title="Xóa">
-                                    <DeleteOutlined style={{ fontSize: '25px', color: 'red' }} />
-                                </Tooltip>
-                            </div>
+                            <Tooltip title="Sửa">
+                                <EditOutlined style={{ fontSize: '25px', color: '#1677FF' }} onClick={showLoading} />
+                            </Tooltip>
+                            <Modal
+                                title={<p>Chỉnh sửa câu hỏi</p>}
+                                footer={
+                                    <Button type="primary" onClick={() => setOpen(false)}>
+                                        Ok
+                                    </Button>
+                                }
+                                loading={loading}
+                                open={open}
+                                onCancel={() => setOpen(false)}
+                            >
+
+                            </Modal>
+                            <Tooltip title="Xóa">
+                                <DeleteOutlined style={{ fontSize: '25px', color: 'red' }} />
+                            </Tooltip>
+                        </div>
                     </div>
                 </div>
             </section>

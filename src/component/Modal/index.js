@@ -18,6 +18,7 @@ export default function CustomModal({
       onCancel={onCancel}
       onOk={onOk}
       confirmLoading={loading}
+      width={800} 
     >
       {children}
     </Modal>
