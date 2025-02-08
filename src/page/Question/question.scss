@@ -96,6 +96,12 @@
         align-items: center;
     }
 
+    &__actions {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
 }
 
 .contentPopOverFilter{

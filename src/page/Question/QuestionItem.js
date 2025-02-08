@@ -27,9 +27,12 @@ export default function QuestionItem({ item }) {
     const [messageApi, contextHolder] = message.useMessage();
 
     const handleDeleteQuestion = (questionId) => {
-        dispatch(deleteQuestion(questionId));
+        console.log("Before dispatch");
+        dispatch(deleteQuestion(questionId)); // Kiểm tra xem dispatch có thực hiện đúng không
+        console.log("After dispatch");
         messageApi.success('Xóa thành công!');
-    }
+    };
+    
     return (
         <>
             {contextHolder}

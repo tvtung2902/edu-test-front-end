@@ -56,7 +56,7 @@ export const deleteQuestion = (questionId) => {
     return async (dispatch) => {
         dispatch({ type: DELETE_REQUEST });
         try {
-            await new Promise(resolve => setTimeout(resolve, 1000)); 
+            // await new Promise(resolve => setTimeout(resolve, 1000)); 
             const result = await delQuestion(questionId);
             dispatch({ type: DELETE_SUCCESS, payload: questionId })
         } catch (error) {

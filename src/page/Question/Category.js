@@ -1,6 +1,7 @@
 import { Button, Radio, Tooltip, Modal, Input } from "antd";
 import { DeleteOutlined, EditOutlined, FilterOutlined, QuestionCircleOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { useState } from "react";
+import CategoryItem from "./CategoryItem";
 const { Search } = Input;
 
 export default function Category() {
@@ -31,33 +32,7 @@ export default function Category() {
 
             <section className="categories">
                 <div className="categories__wrapper container">
-                    <div className="categories__item">
-                        <div className="categories__left-content">
-                            <UnorderedListOutlined style={{ fontSize: '28px', color: '#1677FF' }} />
-                            <p>Nội dung danh mục 1</p>
-                        </div>
-                        <div className="questions__actions">
-                            <Tooltip title="Sửa">
-                                <EditOutlined style={{ fontSize: '25px', color: '#1677FF' }} onClick={showLoading} />
-                            </Tooltip>
-                            <Modal
-                                title={<p>Chỉnh sửa câu hỏi</p>}
-                                footer={
-                                    <Button type="primary" onClick={() => setOpen(false)}>
-                                        Ok
-                                    </Button>
-                                }
-                                loading={loading}
-                                open={open}
-                                onCancel={() => setOpen(false)}
-                            >
-
-                            </Modal>
-                            <Tooltip title="Xóa">
-                                <DeleteOutlined style={{ fontSize: '25px', color: 'red' }} />
-                            </Tooltip>
-                        </div>
-                    </div>
+                    <CategoryItem />
                 </div>
             </section>
         </>
