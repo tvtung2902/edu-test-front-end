@@ -1,0 +1,46 @@
+.header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 90px;
+  box-shadow: 0 4px 4px -4px rgba(0, 0, 0, .2);
+  position: sticky;
+
+  &__wrap-logo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-main);
+
+    p {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    p:nth-child(3){
+      color: #000;
+    }
+  }
+
+  &__icon {
+    width: 35px;
+    height: 35px;
+    margin-right: 5px;
+  }
+
+  &__wrap-right{
+    display: flex;
+    align-items: center;
+    gap: 30px;
+  }
+
+  &__list-nav{
+    display: flex;
+    gap: 30px; 
+  }
+
+  &__item-nav{
+    font-weight: 600;
+  }
+}
+
