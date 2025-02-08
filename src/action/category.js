@@ -54,7 +54,7 @@ export const deleteCategory = (categoryId) => {
         dispatch({ type: "DELETE_CATEGORY_REQUEST" });
         try {
             await new Promise(resolve => setTimeout(resolve, 500)); 
-
+ 
             await deleteCategoryService(categoryId);
             dispatch({ type: "DELETE_CATEGORY_SUCCESS", payload: categoryId });
         } catch (error) {
