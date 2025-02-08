@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Modal } from "antd";
 
 export default function CustomModal({
@@ -10,6 +10,7 @@ export default function CustomModal({
   footer,
   loading = false
 }) {
+
   return (
     <Modal
       title={title}

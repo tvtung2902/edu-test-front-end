@@ -17,6 +17,17 @@ export const post = async (path, data) =>{
   return res.json();
 }
 
+export const postFormData = async (path, data) =>{
+  const res = await fetch(`${API_SERVER}${path}`,{
+    method: "POST",
+    headers: {
+      Accept : "application/json",  
+    },
+    body: data
+  })
+  return res.json();
+}
+
 export const del = async (path) => {
   const res = await fetch(`${API_SERVER}${path}`,{
     method: "DELETE",

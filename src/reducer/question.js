@@ -45,6 +45,7 @@ export const questionReducer = (state = initialState, action) => {
                 error: action.payload,
             };
         case ADD_SUCCESS:
+            console.log(action.payload);
             return{
                 ...state,
                 loading: false,

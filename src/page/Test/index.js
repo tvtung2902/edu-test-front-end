@@ -1,13 +1,17 @@
-function Test(){
-   return (
+import React from 'react';
+import { Button, message } from 'antd';
+const App = () => {
+  const [messageApi, contextHolder] = message.useMessage();
+  const info = () => {
+    messageApi.success('Xóa thành công!');
+  };
+  return (
     <>
-        <h1>question</h1>
-        <h1>question</h1>
-        <h1>question</h1>
-        <h1>question</h1>
-        <h1>question</h1>
+      {contextHolder}
+      <Button type="primary" onClick={info}>
+        Display normal message
+      </Button>
     </>
-   )
-}
-
-export default Test;
+  );
+};
+export default App;
