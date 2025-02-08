@@ -8,7 +8,7 @@ import { fetchDataQuestion, test } from "../../action/question";
 import ContentPopOver from "../../component/ContentPopOver";
 import TextArea from "antd/es/input/TextArea";
 import CustomModal from "../../component/Modal";
-import AddUpdateQuestionModal from "../../component/AddUpdateQuestion/AddUpdateQuestionModal";
+import AddUpdateQuestionModal from "../../component/AddUpdateQuestion";
 const { Search } = Input;
 
 

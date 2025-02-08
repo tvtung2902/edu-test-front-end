@@ -4,7 +4,7 @@ import { Children, useState } from "react";
 import Modal from "../../component/Modal";
 import { useDispatch, useSelector } from "react-redux";
 import ContentPopOver from "../../component/ContentPopOver";
-import AddUpdateQuestionModal from "../../component/AddUpdateQuestion/AddUpdateQuestionModal";
+import AddUpdateQuestionModal from "../../component/AddUpdateQuestion";
 import { deleteQuestion } from "../../action/question";
 const { Search } = Input;
 
@@ -20,7 +20,6 @@ export default function QuestionItem({ item }) {
         setOpenModalEdit(false);
     }
 
-
     const handleUpdateCategoryOfQuestion = () => {
 
     }
@@ -28,7 +27,7 @@ export default function QuestionItem({ item }) {
 
     const handleDeleteQuestion = (questionId) => {
         console.log("Before dispatch");
-        dispatch(deleteQuestion(questionId)); // Kiểm tra xem dispatch có thực hiện đúng không
+        dispatch(deleteQuestion(questionId));
         console.log("After dispatch");
         messageApi.success('Xóa thành công!');
     };

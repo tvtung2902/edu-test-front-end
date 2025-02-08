@@ -1,18 +1,3 @@
-import {
-    FETCH_DATA_REQUEST,
-    FETCH_DATA_SUCCESS,
-    FETCH_DATA_FAILURE,
-    ADD_REQUEST,
-    ADD_SUCCESS,
-    ADD_FAILURE,
-    DELETE_REQUEST,
-    DELETE_SUCCESS,
-    DELETE_FAILURE,
-    UPDATE_REQUEST,
-    UPDATE_SUCCESS,
-    UPDATE_FAILURE
-} from '../action/actionType'
-
 const initialState = {
     questions: [],
     loading: false,
@@ -21,30 +6,31 @@ const initialState = {
 
 export const questionReducer = (state = initialState, action) => {
     switch (action.type) {
-        case FETCH_DATA_REQUEST:
-        case ADD_REQUEST:
-        case UPDATE_REQUEST:
-        case DELETE_REQUEST:
+        case "FETCH_DATA_QUESTION_REQUEST":
+        case "ADD_QUESTION_REQUEST":
+        case "UPDATE_QUESTION_REQUEST":
+        case "DELETE_QUESTION_REQUEST":
             return {
                 ...state,
-                loading: true
+                loading: true,
+                error: null
             }
-        case FETCH_DATA_SUCCESS:
+        case "FETCH_DATA_QUESTION_SUCCESS":
             return {
                 ...state,
                 loading: false,
                 questions: action.payload
             }
-        case FETCH_DATA_FAILURE:
-        case ADD_FAILURE:
-        case UPDATE_FAILURE:
-        case DELETE_FAILURE:
+        case "FETCH_DATA_QUESTION_FAILURE":
+        case "ADD_QUESTION_FAILURE":
+        case "UPDATE_QUESTION_FAILURE":
+        case "DELETE_QUESTION_FAILURE":
             return {
                 ...state,
                 loading: false,
                 error: action.payload,
             };
-        case ADD_SUCCESS:
+        case "ADD_QUESTION_SUCCESS":
             console.log(action.payload);
             return{
                 ...state,
@@ -54,7 +40,7 @@ export const questionReducer = (state = initialState, action) => {
                     action.payload
                 ]
             }
-        case UPDATE_SUCCESS:
+        case "UPDATE_QUESTION_SUCCESS":
             return{
                 ...state,
                 loading: false,
@@ -65,7 +51,7 @@ export const questionReducer = (state = initialState, action) => {
                     })
                 ]
             }
-        case DELETE_SUCCESS:
+        case "DELETE_QUESTION_SUCCESS":
             return {
                 ...state,
                 loading: false,

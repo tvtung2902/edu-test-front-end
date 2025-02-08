@@ -68,6 +68,7 @@ export default function AddUpdateQuestionModal({ open, handleCloseModal }) {
             open={open}
             onCancel={onCancel}
             onOk={onOk}
+            width={800}
         >
             <Form
                 form={form}

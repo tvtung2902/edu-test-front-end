@@ -1,17 +1,17 @@
 import { del, get, postFormData, put } from "../util/request";
 
-export const getQuestions = async () => {
+export const getListQuestionService = async () => {
     return await get("questions");
 }
 
-export const addQuestion = async (newQuestionFormData) => {
+export const addQuestionService = async (newQuestionFormData) => {
     return await postFormData("questions", newQuestionFormData);
 }
 
-export const updateQuestion = async (currentQuestion) => {
+export const updateQuestionService = async (currentQuestion) => {
     return await put(`questions/${currentQuestion.id}`, currentQuestion);
 }
 
-export const deleteQuestion = async (questionId) => {
+export const deleteQuestionService = async (questionId) => {
     return await del(`questions/${questionId}`)
 }

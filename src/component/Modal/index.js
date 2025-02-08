@@ -8,6 +8,7 @@ export default function CustomModal({
   onOk,
   children,
   footer,
+  width,
   loading = false
 }) {
 
@@ -19,7 +20,7 @@ export default function CustomModal({
       onCancel={onCancel}
       onOk={onOk}
       confirmLoading={loading}
-      width={800} 
+      width={width} 
     >
       {children}
     </Modal>
