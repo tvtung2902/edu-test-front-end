@@ -1,7 +1,7 @@
 import { del, get, post, put } from "../util/request";
 
-export const getListCategoryService = async () => {
-    return await get("categories");
+export const getListCategoryService = async (pageNo, pageSize, searchName) => {
+    return await get(`categories?page-no=${pageNo}&page-size=${pageSize}&name=${searchName}`);
 }
 
 export const addCategoryService = async (newcategoryFormData) => {

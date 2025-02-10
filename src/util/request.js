@@ -1,5 +1,6 @@
 const API_SERVER = "http://localhost:6969/api/"
 export const get = async (path) => {
+  console.log(path);
   const response = await fetch(`${API_SERVER}${path}`);
   const result = await response.json();
   return result;

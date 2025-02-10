@@ -102,6 +102,10 @@
         align-items: center;
     }
 
+    &__pagination{
+        display: flex;
+        flex-direction: row-reverse;
+    }
 }
 
 .contentPopOverFilter{

@@ -1,29 +1,30 @@
 import { Button, Select, Input, Upload, Form, Switch, Row, Col } from "antd";
-import { UploadOutlined } from '@ant-design/icons';
-import TextArea from "antd/es/input/TextArea";
 import CustomModal from "../Modal";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addCategory } from "../../action/category";
+import { useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
 
-export default function AddUpdateCategory({ open, handleCloseModal }){
+export default function AddUpdateCategory({ open, handleCloseModal, getData }) {
     const [form] = Form.useForm();
     const dispatch = useDispatch();
 
     const onCancel = () => {
-            handleCloseModal();
-        };
-    
-        const onOk = () => {
-            form.validateFields()
-                .then((values) => {
-                    console.log("values", values);
-                    
-                    dispatch(addCategory(values));
-                })
-                .catch((error) => {
-                    console.log("Validation Error:", error);
-                });
-        };
+        handleCloseModal();
+    };
+
+    const onOk = () => {
+        form.validateFields()
+            .then(async (values) => {
+                handleCloseModal();
+                form.resetFields();
+                await dispatch(addCategory(values));
+                dispatch(getData());
+            })
+            .catch((error) => {
+                console.log("Validation Error:", error);
+            });
+    };
     return (
         <CustomModal
             title="THÊM DANH MỤC"

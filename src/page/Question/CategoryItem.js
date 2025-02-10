@@ -1,12 +1,12 @@
 import { Button, Radio, Tooltip, Modal, Input, Popconfirm, message } from "antd";
 import { DeleteOutlined, EditOutlined, FilterOutlined, QuestionCircleOutlined, UnorderedListOutlined } from '@ant-design/icons';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomModal from "../../component/Modal";
 import AddUpdateCategory from "../../component/AddUpdateCategory";
-import { useDispatch } from "react-redux";
-import { deleteCategory } from "../../action/category";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteCategory, fetchDataCategory } from "../../action/category";
 
-export default function CategoryItem({ item }) {
+export default function CategoryItem({ item, getData, mess }) {
     const [open, setOpen] = useState(false);
     const dispatch = useDispatch()
     const handleOpenModalUpdate = () => {
@@ -17,15 +17,13 @@ export default function CategoryItem({ item }) {
         setOpen(false);
     }
 
-    const handleDeleteCategory = (categoryId) => {
-        messageApi.success('Xóa thành công!');
-        dispatch(deleteCategory(categoryId));
+    const handleDeleteCategory = async (categoryId) => {
+        await dispatch(deleteCategory(categoryId));
+        dispatch(getData());
     }
-    const [messageApi, contextHolder] = message.useMessage();
 
     return (
         <>
-            {contextHolder}
             <AddUpdateCategory open={open} handleCloseModal={handleCloseModalUpdate} />
             <div className="categories__item">
                 <div className="categories__left-content">
@@ -37,7 +35,7 @@ export default function CategoryItem({ item }) {
                         <EditOutlined style={{ fontSize: '25px', color: '#1677FF' }} onClick={handleOpenModalUpdate} />
                     </Tooltip>
                     <Popconfirm
-                        title="Xóa Câu Hỏi"
+                        title="Xóa Danh Mục"
                         description="Bạn có chắc chắn muốn xóa không?"
                         okText="Đồng ý"
                         cancelText="Hủy"
