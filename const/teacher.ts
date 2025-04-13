@@ -1,0 +1,1 @@
+export const pageSizeOfCategoryPage = 5 ;
