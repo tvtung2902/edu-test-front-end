@@ -9,7 +9,7 @@ export interface ApiGetListResponse<T> {
     status: number;
 }
 
-export interface ApiPostResponse {
+export interface ApiResponse {
     message: string;
     response: {
         id: number;

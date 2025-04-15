@@ -1,22 +1,9 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { BookOpen, ChevronLeft, ChevronRight, MoreHorizontal, Plus } from "lucide-react"
 import CategoryList from "./categoryList"
-import { Input, message } from "antd";
-import { useSearchParams } from "next/navigation"
 import CategorySearch from "./categorySearch"
 import CategoryPagination from "./categoryPagination"
 import ModalAdd from "./modalAdd"
-const { Search } = Input;
 
 export default function CategoriesPage() {
   return (
@@ -31,8 +18,7 @@ export default function CategoriesPage() {
       </div>
 
       <Card>
-        <CardHeader className="pb-3">
-        </CardHeader>
+        <CardHeader className="pb-3" />
         <CardContent>
           <div className="flex items-center justify-between pb-4">
             <div className="relative">
@@ -46,7 +32,7 @@ export default function CategoriesPage() {
                   <TableHead>Danh mục</TableHead>
                   <TableHead>Câu hỏi</TableHead>
                   <TableHead>Ngày tạo</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
+                  <TableHead className="w-[50px]" />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -55,7 +41,7 @@ export default function CategoriesPage() {
             </Table>
           </div>
           <div className="pt-4 flex justify-end">
-            <CategoryPagination/>
+            <CategoryPagination />
           </div>
         </CardContent>
       </Card>

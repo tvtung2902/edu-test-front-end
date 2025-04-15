@@ -1,1 +1,1 @@
-export const pageSizeOfCategoryPage = 5 ;
+export const pageSizeOfCategoryPage = 1;

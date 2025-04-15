@@ -10,22 +10,16 @@ import {
 import { TableCell, TableRow } from "@/components/ui/table"
 import Category from "@/types/Category"
 import { BookOpen, MoreHorizontal } from "lucide-react"
-import ModalEdit from "./modalEdit"
-import { useState } from "react"
+import { memo } from "react"
 
 interface CategoryType {
     category: Category,
     handleDelete: (id: number) => void,
+    handleOpenModalEdit: (id: number) => void,
 }
 
-export default function CategoryItem({ category, handleDelete }: CategoryType) {
-    const [openModalEdit, setOpenModalEdit] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-    const handleOpenModalEdit = () => {
-        setOpenModalEdit(true);
-        setSelectedCategory(category);
-    };
-    return (<>
+function CategoryItem({ category, handleDelete, handleOpenModalEdit }: CategoryType) {
+    return (
         <TableRow key={category.id}>
             <TableCell>
                 <div className="flex items-center gap-3">
@@ -47,16 +41,21 @@ export default function CategoryItem({ category, handleDelete }: CategoryType) {
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Hành động</DropdownMenuLabel>
                         <DropdownMenuItem>Xem đề thi</DropdownMenuItem>
-                        <DropdownMenuItem onClick={handleOpenModalEdit}>Sửa danh mục</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleOpenModalEdit(category.id)}>
+                            Sửa danh mục
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-600 hover:!text-red-600" onClick={() => handleDelete(category.id)}>Xóa Danh mục</DropdownMenuItem>
+                        <DropdownMenuItem 
+                            className="text-red-600 hover:!text-red-600" 
+                            onClick={() => handleDelete(category.id)}
+                        >
+                            Xóa Danh mục
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </TableCell>
         </TableRow>
-        <ModalEdit closeModalEdit={() => setOpenModalEdit(false)}
-            category={selectedCategory}
-            openModalEdit={openModalEdit} />
-    </>
     )
 }
+
+export default memo(CategoryItem);
