@@ -1,8 +1,10 @@
+"use client"
 import type React from "react"
 import { TeacherSidebar } from "@/components/sidebar/teacher-sidebar"
 import { TeacherHeader } from "@/components/header/teacher-header"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { SidebarProvider } from "@/components/ui/sidebar"
+import ShowMessage from "./show-message"
 
 export default function TeacherLayout({
   children,
@@ -11,6 +13,7 @@ export default function TeacherLayout({
 }) {
   return (
     <SidebarProvider>
+      <ShowMessage />
         <TeacherSidebar />
         <SidebarInset className="flex flex-col">
           <TeacherHeader />
