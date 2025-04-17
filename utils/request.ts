@@ -44,6 +44,18 @@ export const put = async <T>(path: string, data: any): Promise<T> => {
   return response.json();
 };
 
+export const putForFormData = async<T>(path: string, data: FormData): Promise<T> => {
+  const res = await fetch(`${API_SERVER}${path}`, {
+    method: "PUT",
+    headers: {
+      Accept: "application/json",
+    },
+    body: data,
+  });
+  return res.json();
+
+};
+
 export const patch = async <T>(path: string, data: any): Promise<T> => {
   const response = await fetch(`${API_SERVER}${path}`, {
     method: "PATCH",

@@ -20,16 +20,6 @@ const categories = [
 
 export default function CreateTestPage() {
   const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const handleSubmit = async (data: any) => {
-    setIsSubmitting(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    console.log("Creating test:", data)
-    setIsSubmitting(false)
-    router.push("/teacher/tests/1/questions") // Redirect to add questions
-  }
 
   return (
     <div className="container mx-auto space-y-6 ">

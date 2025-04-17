@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { del, get, post, postForFormData, put } from "@/utils/request";
+import { del, get, post, postForFormData, put, putForFormData } from "@/utils/request";
 import { ApiGetListResponse, ApiResponse } from "@/types/ApiResponse";
 import { pageSizeOfTestPage } from "@/const/teacher";
 import { Test } from "@/types/Test";
@@ -39,6 +39,7 @@ export const fetchTests = createAsyncThunk(
     const isPublic = tab === "all" ? null : tab === "publish" ? true : false;
     const path = `tests?name=${search}${isPublic !== null ? `&public=${isPublic}` : ""}&page-no=${pageNo}&page-size=${pageSize}`;
     const response = await get<ApiGetListResponse<Test>>(path);
+    console.log("response", response);
     return response;
   }
 );
@@ -53,8 +54,8 @@ export const addTest = createAsyncThunk(
 
 export const updateTest = createAsyncThunk(
   'tests/updateTest',
-  async (test: Test) => {
-    const response = await put<ApiResponse>(`tests/${test.id}`, test);
+  async ({test, id}: {test: FormData, id: number}) => {
+    const response = await putForFormData<ApiResponse>(`tests/${id}`, test);
     return response;
   }
 );
