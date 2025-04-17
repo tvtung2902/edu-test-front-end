@@ -40,9 +40,9 @@ export default function TestsPage() {
       <Tabs defaultValue="all" className="w-full">
         <div className="flex items-center justify-between">
           <TabsList>
-            <TabsTrigger value="all">My Tests</TabsTrigger>
-            <TabsTrigger value="published">Published</TabsTrigger>
-            <TabsTrigger value="drafts">Drafts</TabsTrigger>
+            <TabsTrigger value="all">Tất cả</TabsTrigger>
+            <TabsTrigger value="publish">Công khai</TabsTrigger>
+            <TabsTrigger value="private">Riêng tư</TabsTrigger>
           </TabsList>
           <div className="relative">
             <TestSearch />
@@ -51,7 +51,27 @@ export default function TestsPage() {
         <TabsContent value="all" className="mt-6">
           <div className="flex flex-col gap-6">
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              <TestList />
+              <TestList tab="all" />
+            </div>
+            <div className="flex justify-end">
+              <TestPagination />
+            </div>
+          </div>
+        </TabsContent>
+        <TabsContent value="publish" className="mt-6">
+          <div className="flex flex-col gap-6">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <TestList tab="publish" />
+            </div>
+            <div className="flex justify-end">
+              <TestPagination />
+            </div>
+          </div>
+        </TabsContent>
+        <TabsContent value="private" className="mt-6">
+          <div className="flex flex-col gap-6">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <TestList tab="private" />
             </div>
             <div className="flex justify-end">
               <TestPagination />

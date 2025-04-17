@@ -9,6 +9,15 @@ export interface ApiGetListResponse<T> {
     status: number;
 }
 
+export interface ApiGetResponse<T> {
+    message: string;
+    response: {
+        data: T;
+      };
+    status: number;
+}
+
+
 export interface ApiResponse {
     message: string;
     response: {

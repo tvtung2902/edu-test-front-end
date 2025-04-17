@@ -45,7 +45,7 @@ export default function TestItem({test, onDelete}: TestItemType) {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <Link href={`/teacher/tests/${test.id}/questions`}>
+                            <Link href={`/teacher/tests/${test.id}`}>
                                 <DropdownMenuItem>
                                     <Pencil className="mr-2 h-4 w-4" />
                                     Edit test

@@ -10,7 +10,11 @@ import { Modal } from "antd";
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { useSearchParams } from "next/navigation";
 
-export default function TestList() {
+interface TestListProps {
+    tab: string;
+}
+
+export default function TestList({tab}: TestListProps) {
     const {tests} = useSelector((state: RootState) => state.tests);
     const dispatch = useDispatch<AppDispatch>();
     const [testToDelete, setTestToDelete] = useState<Test | null>(null);
@@ -21,8 +25,8 @@ export default function TestList() {
   
 
     useEffect(() => {
-        dispatch(fetchTests({search, pageNo}) as any);
-    }, [dispatch, search, pageNo]);
+        dispatch(fetchTests({search, pageNo, tab}) as any);
+    }, [dispatch, search, pageNo, tab]);
 
     const handleDeleteTest = (test: Test) => {
         setTestToDelete(test);
@@ -31,8 +35,8 @@ export default function TestList() {
     const handleConfirmDelete = async () => {
         if (testToDelete) {
             try {
-                await dispatch(deleteTest(testToDelete.id) as any);
                 setTestToDelete(null);
+                await dispatch(deleteTest(testToDelete.id) as any);
             } catch (error) {
                 console.error("Failed to delete test:", error);
             }
@@ -57,7 +61,9 @@ export default function TestList() {
             onCancel={handleCancelDelete}
             okText="Xóa"
             cancelText="Hủy"
-            okButtonProps={{ danger: true }}
+            okButtonProps={{ 
+              danger: true,
+            }}
           >
             <p>Bạn có chắc chắn muốn xóa bài kiểm tra này không?</p>
           </Modal>

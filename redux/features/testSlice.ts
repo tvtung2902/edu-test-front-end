@@ -33,11 +33,12 @@ const initialState: TestState = {
 
 export const fetchTests = createAsyncThunk(
   'tests/fetchTests',
-  async ({ search = "", pageNo = 1, pageSize = pageSizeOfTestPage }: { search?: string; pageNo?: number; pageSize?: number }) => {
+  async ({ search = "", pageNo = 1, tab = "all", pageSize = pageSizeOfTestPage }:
+     { search?: string; pageNo?: number; tab?: string; pageSize?: number }) => {
     console.log(search, pageNo, pageSize);
-    
-    const response = await get<ApiGetListResponse<Test>>(`tests?name=${search}&page-no=${pageNo}&page-size=${pageSize}`);
-    console.log(response);
+    const isPublic = tab === "all" ? null : tab === "publish" ? true : false;
+    const path = `tests?name=${search}${isPublic !== null ? `&public=${isPublic}` : ""}&page-no=${pageNo}&page-size=${pageSize}`;
+    const response = await get<ApiGetListResponse<Test>>(path);
     return response;
   }
 );
