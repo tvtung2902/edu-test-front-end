@@ -1,8 +1,10 @@
-import { Form, Input, Switch, Button, message } from 'antd';
+import { Form, Input, Switch, Button, message, Upload } from 'antd';
 import { Group } from '@/types/Group';
 import { useDispatch } from 'react-redux';
 import { addGroup, updateGroup } from '@/redux/features/groupSlice';
 import { useRouter } from 'next/navigation';
+import { UploadOutlined } from '@ant-design/icons';
+import { updateTest } from '@/redux/features/testSlice';
 
 interface GroupFormProps {
   initialValues?: Group;
@@ -12,11 +14,32 @@ interface GroupFormProps {
 const GroupForm = ({ initialValues, isEdit = false }: GroupFormProps) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const router = useRouter();
 
   const onFinish = async (values: any) => {
-    
+    const formData = new FormData();
+  
+    const dto = {
+      name: values.name,
+      description: values.description,
+    };
+  
+    formData.append('groupRequestDTO', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+  
+    if (values.image?.[0]?.originFileObj) {
+      formData.append('imageUrl', values.image[0].originFileObj);
+    }
+  
+    try {
+      if (isEdit && initialValues) {
+        dispatch(updateGroup({ group: formData, id: initialValues.id }));
+      } else {
+        dispatch(addGroup(formData));
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
   };
+  
 
   return (
     <Form
@@ -42,11 +65,24 @@ const GroupForm = ({ initialValues, isEdit = false }: GroupFormProps) => {
       </Form.Item>
 
       <Form.Item
-        name="public"
-        label="Public Group"
-        valuePropName="checked"
+        name="image"
+        label="Group Image"
+        valuePropName="fileList"
+        getValueFromEvent={(e) => {
+          if (Array.isArray(e)) {
+            return e;
+          }
+          return e?.fileList;
+        }}
       >
-        <Switch />
+        <Upload
+          name="image"
+          listType="picture"
+          maxCount={1}
+          beforeUpload={() => false}
+        >
+          <Button icon={<UploadOutlined />}>Upload Image</Button>
+        </Upload>
       </Form.Item>
 
       <Form.Item>

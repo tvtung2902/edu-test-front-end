@@ -7,7 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { getGroupDetail } from "@/utils/groupsService";
 import { Group } from "@/types/Group";
-import GroupForm from "../../GroupForm";
+import GroupForm from "../../group-form";
 
 export default function EditGroupPage() {
   const { id } = useParams();

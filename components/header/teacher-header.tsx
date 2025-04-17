@@ -21,7 +21,7 @@ export function TeacherHeader() {
     <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b bg-background px-4 md:px-6">
       <div className="flex items-center gap-2">
         <SidebarTrigger />
-        <h1 className="text-xl font-bold">Trang giáo viên</h1>
+        {/* <h1 className="text-xl font-bold">Trang giáo viên</h1> */}
       </div>
       <div className="flex items-center gap-4">
         <DropdownMenu>

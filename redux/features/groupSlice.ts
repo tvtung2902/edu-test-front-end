@@ -33,11 +33,10 @@ const initialState: GroupState = {
 
 export const fetchGroups = createAsyncThunk(
   'groups/fetchGroups',
-  async ({ search = "", pageNo = 1, tab = "all", pageSize = pageSizeOfTestPage }:
-     { search?: string; pageNo?: number; tab?: string; pageSize?: number }) => {
+  async ({ search = "", pageNo = 1, pageSize = pageSizeOfTestPage }:
+     { search?: string; pageNo?: number; pageSize?: number }) => {
     console.log(search, pageNo, pageSize);
-    const isPublic = tab === "all" ? null : tab === "publish" ? true : false;
-    const path = `groups?name=${search}${isPublic !== null ? `&public=${isPublic}` : ""}&page-no=${pageNo}&page-size=${pageSize}`;
+    const path = `groups?name=${search}&page-no=${pageNo}&page-size=${pageSize}`;
     const response = await get<ApiGetListResponse<Group>>(path);
     console.log("response", response);
     return response;
@@ -48,6 +47,7 @@ export const addGroup = createAsyncThunk(
   'groups/addGroup',
   async (group: FormData) => {
     const response = await postForFormData<ApiResponse>(`groups`, group);
+    console.log("response", response);
     return response;
   }
 );

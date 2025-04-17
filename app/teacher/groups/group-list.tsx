@@ -1,3 +1,4 @@
+'use client'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "@/components/ui/card"
 import {
   DropdownMenu,
@@ -12,25 +13,31 @@ import { FileQuestion, MoreHorizontal, Share2, Users } from "lucide-react"
 import Image from "next/image"
 import { Group } from "@/types/Group"
 import { useDispatch } from "react-redux"
-import { deleteGroup } from "@/redux/features/groupSlice"
-import { useRouter } from "next/navigation"
+import { deleteGroup, fetchGroups } from "@/redux/features/groupSlice"
+import { useRouter, useSearchParams } from "next/navigation"
 import { message } from "antd"
+import { useSelector } from "react-redux"
+import { RootState } from "@/redux/store/store"
+import { useEffect } from "react"
 
-interface GroupListProps {
-  groups: Group[];
-  currentTab: string;
-}
-
-const GroupList = ({ groups, currentTab }: GroupListProps) => {
+const GroupList = () => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const { groups, status } = useSelector((state: RootState) => state.groups);
+
+  const searchParams = useSearchParams();
+  const pageNo = Number(searchParams.get('page-no')) || 1;
+  const search = searchParams.get('name') || "";
+
+  useEffect(() => {
+    dispatch(fetchGroups({ search, pageNo }) as any);
+  }, [dispatch, search, pageNo]);
 
   const handleDelete = async (id: number) => {
     try {
-      await dispatch(deleteGroup(id));
-      message.success('Group deleted successfully');
+      dispatch(deleteGroup(id));
     } catch (error) {
-      message.error('Failed to delete group');
+
     }
   };
 
@@ -39,7 +46,7 @@ const GroupList = ({ groups, currentTab }: GroupListProps) => {
   };
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <>
       {groups.map((group) => (
         <Card key={group.id} className="overflow-hidden">
           <div className="relative h-[140px] w-full overflow-hidden bg-muted">
@@ -70,11 +77,11 @@ const GroupList = ({ groups, currentTab }: GroupListProps) => {
                   <DropdownMenuItem>Manage members</DropdownMenuItem>
                   <DropdownMenuItem>Assign tests</DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     className="text-red-600"
                     onClick={() => handleDelete(group.id)}
                   >
-                    {currentTab === "archived" ? "Delete permanently" : "Archive group"}
+                    Delete group
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -99,7 +106,7 @@ const GroupList = ({ groups, currentTab }: GroupListProps) => {
           </CardFooter>
         </Card>
       ))}
-    </div>
+    </>
   );
 };
 
