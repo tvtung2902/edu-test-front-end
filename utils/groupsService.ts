@@ -3,8 +3,10 @@ import { get } from "./request";
 import { Group } from "@/types/Group";
 const api: string = 'groups/'
 
-export const getGroupDetail = async (id: string): Promise<Group> => {
+export const getGroupDetail = async (id: number): Promise<ApiGetResponse<Group>> => {
     const path: string = `${api}${id}`;
     const res = await get<ApiGetResponse<Group>>(path);
-    return res.response.data;
+    console.log("res", res);
+    console.log("path", path);
+    return res;
 }; 

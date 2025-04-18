@@ -1,6 +1,18 @@
 'use client'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "@/components/ui/card"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
+import { FileQuestion, MoreHorizontal, Share2, Users } from "lucide-react"
+import Image from "next/image"
 import { useDispatch } from "react-redux"
-import { deleteGroup, fetchGroupDetail, fetchGroups } from "@/redux/features/groupSlice"
+import { deleteGroup, fetchGroups } from "@/redux/features/groupSlice"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Modal } from "antd"
 import { useSelector } from "react-redux"
@@ -8,14 +20,12 @@ import { RootState } from "@/redux/store/store"
 import { useEffect, useState } from "react"
 import { ExclamationCircleOutlined } from "@ant-design/icons"
 import GroupItem from "./group-item"
-import GroupForm from "./group-form"
-import { Group } from "@/types/Group"
 
 const GroupList = () => {
   const dispatch = useDispatch();
-  const { groups, groupEdit } = useSelector((state: RootState) => state.groups);
+  const router = useRouter();
+  const { groups } = useSelector((state: RootState) => state.groups);
   const [groupToDelete, setGroupToDelete] = useState<number | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const searchParams = useSearchParams();
   const pageNo = Number(searchParams.get('page-no')) || 1;
@@ -40,19 +50,8 @@ const GroupList = () => {
     setGroupToDelete(null);
   };
 
-  const handleEdit = async (id: number) => {
-    dispatch(fetchGroupDetail(id) as any);
+  const handleEdit = (id: number) => {
   };
-
-  const handleCancelEdit = () => {
-    setIsEditModalOpen(false);
-  };
-
-  useEffect(() => {
-    if (groupEdit) {
-      setIsEditModalOpen(true);
-    }
-  }, [groupEdit]);
 
   return (
     <>
@@ -74,30 +73,9 @@ const GroupList = () => {
       >
         <p>Bạn có chắc chắn muốn xóa nhóm này?</p>
       </Modal>
-      {groupEdit && (
-        <Modal
-          title="Chỉnh sửa nhóm"
-          open={isEditModalOpen}
-          onCancel={handleCancelEdit}
-          footer={null}
-          width={600}
-        >
-          <GroupForm
-            initialValues={groupEdit}
-            isEdit
-            handleCloseModal={handleCancelEdit}
-          />
-        </Modal>
-      )}
-
-      {groups.map((group) => (
-        <GroupItem
-          key={group.id}
-          group={group}
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
-        />
-      ))}
+        {groups.map((group) => (
+          <GroupItem key={group.id} group={group} handleEdit={handleEdit} handleDelete={handleDelete} />
+        ))}
     </>
   );
 };

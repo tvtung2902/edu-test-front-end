@@ -42,7 +42,9 @@ const EditTestForm = ({ test }: EditTestFormProps) => {
 
   const onFinish = (values: any) => {
     const formData = new FormData();
-
+    console.log("test.image", !test.image);
+    console.log("image", image?.[0]?.url);
+    
     const dto = {
       name: values.name,
       description: values.description || null,
@@ -51,6 +53,7 @@ const EditTestForm = ({ test }: EditTestFormProps) => {
       startDate: values.dateRange?.[0]?.format('YYYY-MM-DDTHH:mm:ss') || null,
       endDate: values.dateRange?.[1]?.format('YYYY-MM-DDTHH:mm:ss') || null,
       isPublic: values.isPublic,
+      changedImg: (test.image ? image?.[0]?.url !== test.image : false)
     };
 
     console.log("dto", dto);

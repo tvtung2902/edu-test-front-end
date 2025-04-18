@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { del, get, post, postForFormData, put, putForFormData } from "@/utils/request";
-import { ApiGetListResponse, ApiResponse } from "@/types/ApiResponse";
+import { ApiGetListResponse, ApiGetResponse, ApiResponse } from "@/types/ApiResponse";
 import { pageSizeOfTestPage } from "@/const/teacher";
 import { Group } from "@/types/Group";
 
@@ -13,22 +13,27 @@ interface GroupState {
     | 'update loading'
     | 'delete loading'
     | 'fetch loading'
+    | 'fetch detail loading'
     | 'add succeeded'
     | 'update succeeded'
     | 'delete succeeded'
     | 'fetch succeeded'
+    | 'fetch detail succeeded'
     | 'add failed'
     | 'update failed'
     | 'delete failed'
-    | 'fetch failed';
+    | 'fetch failed'
+    | 'fetch detail failed';
   error: string | null;
+  groupEdit: Group | null;
 }
 
 const initialState: GroupState = {
   groups: [],
   totalPages: -1,
   status: 'idle',
-  error: null
+  error: null,
+  groupEdit: null
 };
 
 export const fetchGroups = createAsyncThunk(
@@ -39,6 +44,14 @@ export const fetchGroups = createAsyncThunk(
     const path = `groups?name=${search}&page-no=${pageNo}&page-size=${pageSize}`;
     const response = await get<ApiGetListResponse<Group>>(path);
     console.log("response", response);
+    return response;
+  }
+);
+
+export const fetchGroupDetail = createAsyncThunk(
+  'groups/fetchGroupDetail',
+  async (id: number) => {
+    const response = await get<ApiGetResponse<Group>>(`groups/${id}`);
     return response;
   }
 );
@@ -64,6 +77,7 @@ export const deleteGroup = createAsyncThunk(
   'groups/deleteGroup',
   async (id: number) => {
     const response = await del<ApiResponse>(`groups/${id}`);
+    console.log("response", response);
     return response;
   }
 );
@@ -76,6 +90,23 @@ const groupSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchGroupDetail.pending, (state) => {
+        state.status = 'fetch detail loading';
+      })
+      .addCase(fetchGroupDetail.fulfilled, (state, action) => {
+        if(action.payload.status === 200) {
+          state.status = 'fetch detail succeeded';
+          console.log("action.payload.response", action);
+          state.groupEdit = action.payload.response;
+          console.log("state.groupEdit", state.groupEdit);
+        } else {
+          state.status = 'fetch detail failed';
+        }
+      })
+      .addCase(fetchGroupDetail.rejected, (state, action) => {
+        state.status = 'fetch detail failed';
+        state.error = action.error.message || 'Đã xảy ra lỗi...';
+      })
       .addCase(deleteGroup.pending, (state) => {
         state.status = 'delete loading';
       })

@@ -11,9 +11,7 @@ export interface ApiGetListResponse<T> {
 
 export interface ApiGetResponse<T> {
     message: string;
-    response: {
-        data: T;
-      };
+    response: T;
     status: number;
 }
 

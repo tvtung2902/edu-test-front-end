@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
-import { Form, Input, Button, Upload, message } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { Form, Input, Switch, Button, message, Upload } from 'antd';
+import { Group } from '@/types/Group';
 import { useDispatch } from 'react-redux';
 import { addGroup, updateGroup } from '@/redux/features/groupSlice';
-import { Group } from '@/types/Group';
-import type { UploadFile } from 'antd/es/upload/interface';
+import { useRouter } from 'next/navigation';
+import { UploadOutlined } from '@ant-design/icons';
+import { updateTest } from '@/redux/features/testSlice';
 
 interface GroupFormProps {
   initialValues?: Group;
@@ -16,64 +16,41 @@ const GroupForm = ({ initialValues, isEdit = false, handleCloseModal }: GroupFor
   const [form] = Form.useForm();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (isEdit && initialValues) {
-      const imageFileList: UploadFile[] = initialValues.image
-        ? [
-            {
-              uid: '-1',
-              name: 'image.png',
-              status: 'done',
-              url: initialValues.image, // Đây phải là đường dẫn ảnh hợp lệ
-            },
-          ]
-        : [];
-
-      form.setFieldsValue({
-        name: initialValues.name,
-        description: initialValues.description,
-        image: imageFileList,
-      });
-    }
-  }, [initialValues, isEdit, form]);
-
   const onFinish = async (values: any) => {
     const formData = new FormData();
-
+  
     const dto = {
       name: values.name,
       description: values.description,
     };
-
-    formData.append(
-      'groupRequestDTO',
-      new Blob([JSON.stringify(dto)], { type: 'application/json' })
-    );
-
-    console.log("values.image", values.image);
-
-    const imageFile = values.image?.[0]?.originFileObj;
-    if (imageFile) {
-      formData.append('imageUrl', imageFile);
+  
+    formData.append('groupRequestDTO', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+  
+    if (values.image?.[0]?.originFileObj) {
+      formData.append('imageUrl', values.image[0].originFileObj);
     }
-
     handleCloseModal();
     form.resetFields();
 
     try {
       if (isEdit && initialValues) {
-         dispatch(updateGroup({ group: formData, id: initialValues.id }));
+        dispatch(updateGroup({ group: formData, id: initialValues.id }));
       } else {
-         dispatch(addGroup(formData));
+        dispatch(addGroup(formData));
       }
     } catch (error) {
-      console.error('Form submission error:', error);
-      message.error('Error submitting form');
+      console.error('Error submitting form:', error);
     }
   };
+  
 
   return (
-    <Form form={form} layout="vertical" onFinish={onFinish}>
+    <Form
+      form={form}
+      layout="vertical"
+      initialValues={initialValues}
+      onFinish={onFinish}
+    >
       <Form.Item
         name="name"
         label="Group Name"
@@ -95,14 +72,16 @@ const GroupForm = ({ initialValues, isEdit = false, handleCloseModal }: GroupFor
         label="Group Image"
         valuePropName="fileList"
         getValueFromEvent={(e) => {
-          if (Array.isArray(e)) return e;
+          if (Array.isArray(e)) {
+            return e;
+          }
           return e?.fileList;
         }}
       >
         <Upload
+          name="image"
           listType="picture"
           maxCount={1}
-          accept="image/*"
           beforeUpload={() => false}
         >
           <Button icon={<UploadOutlined />}>Upload Image</Button>
@@ -118,4 +97,4 @@ const GroupForm = ({ initialValues, isEdit = false, handleCloseModal }: GroupFor
   );
 };
 
-export default GroupForm;
+export default GroupForm; 
