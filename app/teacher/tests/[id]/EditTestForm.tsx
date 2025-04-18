@@ -45,6 +45,7 @@ const EditTestForm = ({ test }: EditTestFormProps) => {
     console.log("test.image", !test.image);
     console.log("image", image?.[0]?.url);
     
+
     const dto = {
       name: values.name,
       description: values.description || null,
@@ -53,11 +54,15 @@ const EditTestForm = ({ test }: EditTestFormProps) => {
       startDate: values.dateRange?.[0]?.format('YYYY-MM-DDTHH:mm:ss') || null,
       endDate: values.dateRange?.[1]?.format('YYYY-MM-DDTHH:mm:ss') || null,
       isPublic: values.isPublic,
-      changedImg: (test.image ? image?.[0]?.url !== test.image : false)
+      changedImg: (test.image && !image?.[0]?.url) ||
+        (!test.image && image.length !== 0) ||
+        (test.image && image.length === 0)
     };
 
-    console.log("dto", dto);
-
+    console.log("test.image && !image?.[0]?.url", test.image && !image?.[0]?.url);
+    console.log("!test.image && image.length !== 0", !test.image && image.length !== 0);
+    console.log("test.image && image.length === 0", test.image && image.length === 0);
+    
     const jsonBlob = new Blob([JSON.stringify(dto)], { type: 'application/json' });
     formData.append("data", jsonBlob);
 
@@ -69,6 +74,7 @@ const EditTestForm = ({ test }: EditTestFormProps) => {
   };
 
   const handleImageChange = ({ fileList }: any) => {
+    console.log("fileList", fileList);
     setImage(fileList || []);
   };
 
