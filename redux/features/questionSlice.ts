@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { del, get, post, postForFormData, put } from "@/utils/request";
+import { del, get, post, postForFormData, put, putForFormData } from "@/utils/request";
 import { ApiGetListResponse, ApiGetResponse, ApiResponse } from "@/types/ApiResponse";
 import { Question } from "@/types/Question";
 import { pageSizeOfQuestionPage } from "@/const/teacher";
@@ -84,8 +84,8 @@ export const addQuestion = createAsyncThunk(
 
 export const updateQuestion = createAsyncThunk(
   'questions/updateQuestion',
-  async ({question, id}: {question: Question, id: number}) => {
-    const response = await put<ApiResponse>(`questions/${id}`, question);
+  async ({question, id}: {question: FormData, id: number}) => {
+    const response = await putForFormData<ApiResponse>(`questions/${id}`, question);
     return response;
   }
 );

@@ -5,10 +5,10 @@ import { Button, Form, Input, Radio, Select, Space, Card, Image, Typography, Che
 import { PlusOutlined, DeleteOutlined, EyeOutlined, UploadOutlined } from '@ant-design/icons'
 import Category from "@/types/Category";
 import { Question } from "@/types/Question";
-import { addQuestion } from "@/redux/features/questionSlice";
+import { addQuestion, updateQuestion } from "@/redux/features/questionSlice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
-import { Option as Choice  } from "@/types/Option";
+import { Option as Choice } from "@/types/Option";
 
 const { TextArea } = Input;
 
@@ -16,17 +16,18 @@ type QuestionFormProps = {
   initialData?: Question | null
   onSubmit: (question: Omit<Question, "id">) => void
   onCancel?: () => void,
-  categories: Category[]
+  categories: Category[],
+  isEdit: boolean
 }
 
 const initOption: Omit<Choice, "id">[] = [
-  {content: "", isCorrect: false },
-  {content: "", isCorrect: false },
-  {content: "", isCorrect: false },
-  {content: "", isCorrect: false },
+  { content: "", isCorrect: false },
+  { content: "", isCorrect: false },
+  { content: "", isCorrect: false },
+  { content: "", isCorrect: false },
 ]
 
-export function QuestionForm({ initialData, onSubmit, onCancel, categories }: QuestionFormProps) {
+export function QuestionForm({ initialData, isEdit, onCancel, categories }: QuestionFormProps) {
   const [form] = Form.useForm();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -34,19 +35,20 @@ export function QuestionForm({ initialData, onSubmit, onCancel, categories }: Qu
     const formData = new FormData();
     console.log("values", values);
 
-    const imageQuestion = values.questionImage?.fileList?.[0]?.originFileObj;
+    const imageQuestion = values.questionImage?.[0]?.originFileObj;
+    console.log("imageQuestion", imageQuestion);
     if (imageQuestion) {
       formData.append("imageQuestion", imageQuestion);
     }
 
     const answers = values.options.map((option: any) => {
       console.log("option", option);
-      console.log("option.is",option.isCorrect );
+      console.log("option.is", option.isCorrect);
       const base = {
         content: option.content,
-        isCorrect: option.isCorrect, 
+        isCorrect: option.isCorrect,
       };
-  
+
       const fileObj = option.image?.fileList?.[0]?.originFileObj;
       if (fileObj) {
         formData.append("imageAnswers", fileObj);
@@ -66,7 +68,11 @@ export function QuestionForm({ initialData, onSubmit, onCancel, categories }: Qu
     const jsonBlob = new Blob([JSON.stringify(questionDto)], { type: 'application/json' });
     formData.append("dataQuestion", jsonBlob);
 
-    dispatch(addQuestion(formData) as any);
+    if (isEdit) {
+      dispatch(updateQuestion({ question: formData, id: initialData?.id || -1 }) as any);
+    } else {
+      dispatch(addQuestion(formData) as any);
+    }
   };
 
   return (
@@ -81,25 +87,49 @@ export function QuestionForm({ initialData, onSubmit, onCancel, categories }: Qu
       onFinish={onFinish}
       initialValues={{
         content: initialData?.content || "",
-        options: initialData?.options || initOption,
-        categories: initialData?.categories || [],
+        categories: initialData?.categories.map((category: Category) => category.id) || [],
         explanation: initialData?.explanation || "",
+        questionImage: initialData?.image
+          ? [
+            {
+              uid: '-1',
+              name: 'ảnh mô tả câu hỏi',
+              status: 'done',
+              url: initialData.image,
+            },
+          ]
+          : [],
+        options: initialData?.options ?
+          initialData?.options.map((option: Choice, index: number) => ({
+            content: option.content || "",
+            isCorrect: option.isCorrect || false,
+            image: option.image ? [
+              {
+                uid: -1 * index,
+                name: 'ảnh mô tả đáp án ' + String.fromCharCode(65 + index),
+                status: 'done',
+                url: option.image,
+              },
+            ]
+              : [],
+          }))
+          : initOption,
       }}
     >
       <Row>
         <Col span={12}>
           <Form.Item label="Ảnh mô tả" name="questionImage"
-          valuePropName="fileList"
-          getValueFromEvent={(e) => {
-            if (Array.isArray(e)) return e;
-            return e?.fileList;
-          }}>
+            valuePropName="fileList"
+            getValueFromEvent={(e) => {
+              if (Array.isArray(e)) return e;
+              return e?.fileList;
+            }}>
             <Upload
-              fileList={initialData?.image ? [{
-                uid: initialData?.image,
-                name: initialData?.image,
-                url: initialData?.image,
-              }] : []}
+              // fileList={initialData?.image ? [{
+              //   uid: initialData?.image,
+              //   name: initialData?.image,
+              //   url: initialData?.image,
+              // }] : []}
               beforeUpload={() => false}
               listType="picture"
               maxCount={1}
@@ -116,7 +146,6 @@ export function QuestionForm({ initialData, onSubmit, onCancel, categories }: Qu
               allowClear
               style={{ width: '100%' }}
               placeholder="Chọn loại câu hỏi"
-              defaultValue={[]}
               options={categories && categories.map(c => ({ label: c.name, value: c.id }))}
             />
           </Form.Item>
@@ -152,7 +181,9 @@ export function QuestionForm({ initialData, onSubmit, onCancel, categories }: Qu
                           valuePropName="checked"
                           style={{ margin: 0 }}
                         >
-                          <Checkbox />
+                          <Checkbox
+
+                          />
                         </Form.Item>
 
                         <Form.Item
@@ -187,13 +218,18 @@ export function QuestionForm({ initialData, onSubmit, onCancel, categories }: Qu
                         <Form.Item
                           name={[name, 'image']}
                           style={{ margin: 0 }}
-                        >
+                          valuePropName="fileList"
+                          getValueFromEvent={(e) => {
+                            if (Array.isArray(e)) return e;
+                            return e?.fileList;
+                          }}
+                        >  
                           <Upload
                             beforeUpload={() => false}
                             listType="picture"
                             maxCount={1}
                             accept="image/*"
-                          > 
+                          >
                             <Button icon={<UploadOutlined />}>Ảnh mô tả</Button>
                           </Upload>
                         </Form.Item>

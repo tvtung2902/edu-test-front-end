@@ -5,6 +5,7 @@ import { useEffect } from "react"
 import { fetchTests } from "@/redux/features/testSlice";
 import { useSearchParams } from "next/navigation";
 import { fetchGroups } from "@/redux/features/groupSlice";
+import { fetchQuestions } from "@/redux/features/questionSlice";
 
 export default function ShowMessage() {
     const { status: statusTest } = useSelector((state: RootState) => state.tests);
@@ -17,6 +18,8 @@ export default function ShowMessage() {
     const searchParams = useSearchParams();
     const pageNo = Number(searchParams.get('page-no')) || 1;
     const search = searchParams.get('name') || "";
+    const content = searchParams.get('content') || "";
+    const categoryIds = searchParams.get('categoryIds')?.split(',').map(Number) || [];
 
     const showStatusQuestions = () => {
         if (statusQuestion.endsWith('succeeded') || statusQuestion.endsWith('failed')) {
@@ -28,6 +31,7 @@ export default function ShowMessage() {
                 break;
             case 'delete succeeded':
                 messageApi.success('Xóa câu hỏi thành công');
+                dispatch(fetchQuestions({ content, pageNo, categoryIds}) as any);
                 break;
             case 'update succeeded':
                 messageApi.success('Sửa câu hỏi thành công');

@@ -23,7 +23,7 @@ export default function ContentEditPage({id}: {id: string}) {
 
     return (
         <>
-            <QuestionForm initialData={question} onSubmit={() => {}} categories={categories} />
+            <QuestionForm initialData={question} onSubmit={() => {}} categories={categories} isEdit={true} />
         </>
     )
 }

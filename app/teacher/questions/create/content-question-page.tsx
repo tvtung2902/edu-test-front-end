@@ -18,7 +18,7 @@ export default function ContentQuestionPage() {
 
     return (
         <>
-            <QuestionForm onSubmit={addQuestion} categories={categories} />
+            <QuestionForm onSubmit={addQuestion} categories={categories} isEdit={false} />
         </>
     )
 }
