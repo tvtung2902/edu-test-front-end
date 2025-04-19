@@ -97,7 +97,7 @@
                         <Form.Item name="image">
                             <Upload
                                 beforeUpload={() => false}
-                                listType="picture-card"
+                                listType="picture"
                                 maxCount={1}
                                 accept="image/*"
                             >

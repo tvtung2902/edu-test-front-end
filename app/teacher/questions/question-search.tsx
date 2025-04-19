@@ -7,27 +7,28 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 const { Search } = Input;
 
-export default function CategorySearch() {
+export default function QuestionSearch() {
   const router = useRouter();
   const pathName = usePathname();
   const searchParam = useSearchParams();
-  const searchValue = searchParam.get('name') || "";
-  const [search, setSearch] = useState(searchValue);
-  const {status} = useSelector((state: RootState) => state.categories);
+  const content = searchParam.get('content') || "";
+  const [search, setSearch] = useState(content);
+  const {status} = useSelector((state: RootState) => state.questions);
+
   const onSearch = (value: string) => {
-    if (value !== searchValue) {
-      router.push(`${pathName}?name=${value}`);
+    if (value !== content) {
+      router.push(`${pathName}?content=${value}`);
     }
   };
 
   useEffect(() => {
-    setSearch(searchValue);
-  }, [searchValue]);
+    setSearch(content);
+  }, [content]);
 
   return (
     <div>
       <Search 
-        placeholder="Nhập tên nhóm..." 
+        placeholder="Nhập nội dung câu hỏi..." 
         onSearch={onSearch} 
         enterButton 
         defaultValue={search}
@@ -35,4 +36,4 @@ export default function CategorySearch() {
       />
     </div>
   );
-}   
+} 

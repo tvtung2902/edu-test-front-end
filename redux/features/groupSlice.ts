@@ -2,28 +2,28 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { del, get, post, postForFormData, put, putForFormData } from "@/utils/request";
 import { ApiGetListResponse, ApiGetResponse, ApiResponse } from "@/types/ApiResponse";
 import { pageSizeOfTestPage } from "@/const/teacher";
-import { Group } from "@/types/Group";
+import { Group, GroupRequestDTO } from "@/types/Group";
 
 interface GroupState {
   groups: Group[];
   totalPages: number;
   status:
-    | 'idle'
-    | 'add loading'
-    | 'update loading'
-    | 'delete loading'
-    | 'fetch loading'
-    | 'fetch detail loading'
-    | 'add succeeded'
-    | 'update succeeded'
-    | 'delete succeeded'
-    | 'fetch succeeded'
-    | 'fetch detail succeeded'
-    | 'add failed'
-    | 'update failed'
-    | 'delete failed'
-    | 'fetch failed'
-    | 'fetch detail failed';
+  | 'idle'
+  | 'add loading'
+  | 'update loading'
+  | 'delete loading'
+  | 'fetch loading'
+  | 'fetch detail loading'
+  | 'add succeeded'
+  | 'update succeeded'
+  | 'delete succeeded'
+  | 'fetch succeeded'
+  | 'fetch detail succeeded'
+  | 'add failed'
+  | 'update failed'
+  | 'delete failed'
+  | 'fetch failed'
+  | 'fetch detail failed';
   error: string | null;
   groupEdit: Group | null;
 }
@@ -39,7 +39,7 @@ const initialState: GroupState = {
 export const fetchGroups = createAsyncThunk(
   'groups/fetchGroups',
   async ({ search = "", pageNo = 1, pageSize = pageSizeOfTestPage }:
-     { search?: string; pageNo?: number; pageSize?: number }) => {
+    { search?: string; pageNo?: number; pageSize?: number }) => {
     console.log(search, pageNo, pageSize);
     const path = `groups?name=${search}&page-no=${pageNo}&page-size=${pageSize}`;
     const response = await get<ApiGetListResponse<Group>>(path);
@@ -67,9 +67,12 @@ export const addGroup = createAsyncThunk(
 
 export const updateGroup = createAsyncThunk(
   'groups/updateGroup',
-  async ({group, id}: {group: FormData, id: number}) => {
-    const response = await putForFormData<ApiResponse>(`groups/${id}`, group);
-    return response;
+  async ({ group, groupDTO, id }: { group: FormData, groupDTO: GroupRequestDTO, id: number }) => {
+    const response = await putForFormData<ApiGetResponse<string>>(`groups/${id}`, group);
+    return {
+      response: response,
+      groupDTO: groupDTO
+    }
   }
 );
 
@@ -86,7 +89,7 @@ const groupSlice = createSlice({
   name: 'groups',
   initialState,
   reducers: {
-    
+
   },
   extraReducers: (builder) => {
     builder
@@ -94,7 +97,7 @@ const groupSlice = createSlice({
         state.status = 'fetch detail loading';
       })
       .addCase(fetchGroupDetail.fulfilled, (state, action) => {
-        if(action.payload.status === 200) {
+        if (action.payload.status === 200) {
           state.status = 'fetch detail succeeded';
           console.log("action.payload.response", action);
           state.groupEdit = action.payload.response;
@@ -141,34 +144,64 @@ const groupSlice = createSlice({
         state.status = 'update loading';
       })
       .addCase(updateGroup.fulfilled, (state, action) => {
-        if (action.payload.status === 202) {
-          state.status = 'update succeeded';
-        } else {
-          state.status = 'update failed';
-          state.error = action.payload.message || 'Đã xảy ra lỗi...';
-        }
+        try {
+          if (action.payload.response.status === 202) {
+            state.status = 'update succeeded';
+            state.groupEdit = null;
+            state.error = null;
+            const groupId = action.meta.arg.id;
+            const updated = state.groups.some((group, index) => {
+              if (group.id && group.id === groupId) {
+                state.groups[index] = {
+                  ...group,
+                  name: action.payload.groupDTO.name,
+                  description: action.payload.groupDTO.description,
+                  image: action.payload.response.response,
+                };
+                state.error = null;
+                state.status = 'update succeeded';
+                return true;
+              } else {
+                return false;
+              }
+            });
+
+            if (!updated) {
+              state.error = 'Đã xảy ra lỗi...';
+              state.status = 'update failed';
+            }
+  } else {
+    state.status = 'update failed';
+    state.error = action.payload.response.message || 'Đã xảy ra lỗi...';
+  }
+} catch (error) {
+  console.log("error", error);
+  state.status = 'update failed';
+  state.error = 'Đã xảy ra lỗi...';
+}
       })
+      
       .addCase(updateGroup.rejected, (state, action) => {
-        state.status = 'update failed';
-        state.error = action.error.message || 'Đã xảy ra lỗi...';
-      })
-      .addCase(fetchGroups.pending, (state) => {
-        state.status = 'fetch loading';
-      })
-      .addCase(fetchGroups.fulfilled, (state, action) => {
-        if (action.payload.status === 200) {
-          state.status = 'fetch succeeded';
-          state.groups = action.payload.response.data;
-          state.totalPages = action.payload.response.totalPages;
-        } else {
-          state.status = 'fetch failed';
-          state.error = action.payload.message || 'Đã xảy ra lỗi...';
-        }
-      })
-      .addCase(fetchGroups.rejected, (state, action) => {
-        state.status = 'fetch failed';
-        state.error = action.error.message || 'Đã xảy ra lỗi...';
-      });
+  state.status = 'update failed';
+  state.error = action.error.message || 'Đã xảy ra lỗi...';
+})
+  .addCase(fetchGroups.pending, (state) => {
+    state.status = 'fetch loading';
+  })
+  .addCase(fetchGroups.fulfilled, (state, action) => {
+    if (action.payload.status === 200) {
+      state.status = 'fetch succeeded';
+      state.groups = action.payload.response.data;
+      state.totalPages = action.payload.response.totalPages;
+    } else {
+      state.status = 'fetch failed';
+      state.error = action.payload.message || 'Đã xảy ra lỗi...';
+    }
+  })
+  .addCase(fetchGroups.rejected, (state, action) => {
+    state.status = 'fetch failed';
+    state.error = action.error.message || 'Đã xảy ra lỗi...';
+  });
   },
 });
 

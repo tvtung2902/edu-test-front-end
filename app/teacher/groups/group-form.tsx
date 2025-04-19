@@ -3,7 +3,7 @@ import { Form, Input, Button, Upload, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { addGroup, updateGroup } from '@/redux/features/groupSlice';
-import { Group } from '@/types/Group';
+import { Group, GroupRequestDTO } from '@/types/Group';
 import type { UploadFile } from 'antd/es/upload/interface';
 
 interface GroupFormProps {
@@ -24,7 +24,7 @@ const GroupForm = ({ initialValues, isEdit = false, handleCloseModal }: GroupFor
               uid: '-1',
               name: 'image.png',
               status: 'done',
-              url: initialValues.image, // Đây phải là đường dẫn ảnh hợp lệ
+              url: initialValues.image,
             },
           ]
         : [];
@@ -40,35 +40,42 @@ const GroupForm = ({ initialValues, isEdit = false, handleCloseModal }: GroupFor
   const onFinish = async (values: any) => {
     const formData = new FormData();
 
-    const dto = {
+    const dto: GroupRequestDTO = {
       name: values.name,
       description: values.description,
     };
+    
+    if(isEdit){
+      const hasImageChanged = !!(initialValues?.image && !values.image?.[0]?.url) ||
+        !!(!initialValues?.image && values.image.length !== 0) ||
+        !!(initialValues?.image && values.image.length === 0);
+      
+      if (hasImageChanged) {
+        dto.changedImg = true;
+      }
+    }
 
     formData.append(
       'groupRequestDTO',
       new Blob([JSON.stringify(dto)], { type: 'application/json' })
     );
 
-    console.log("values.image", values.image);
-
     const imageFile = values.image?.[0]?.originFileObj;
     if (imageFile) {
       formData.append('imageUrl', imageFile);
     }
-
+    
     handleCloseModal();
     form.resetFields();
 
     try {
       if (isEdit && initialValues) {
-         dispatch(updateGroup({ group: formData, id: initialValues.id }));
+         dispatch(updateGroup({ group: formData, groupDTO: dto, id: initialValues.id }));
       } else {
          dispatch(addGroup(formData));
       }
     } catch (error) {
       console.error('Form submission error:', error);
-      message.error('Error submitting form');
     }
   };
 

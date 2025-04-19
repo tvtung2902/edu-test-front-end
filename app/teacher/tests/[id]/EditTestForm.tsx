@@ -58,10 +58,6 @@ const EditTestForm = ({ test }: EditTestFormProps) => {
         (!test.image && image.length !== 0) ||
         (test.image && image.length === 0)
     };
-
-    console.log("test.image && !image?.[0]?.url", test.image && !image?.[0]?.url);
-    console.log("!test.image && image.length !== 0", !test.image && image.length !== 0);
-    console.log("test.image && image.length === 0", test.image && image.length === 0);
     
     const jsonBlob = new Blob([JSON.stringify(dto)], { type: 'application/json' });
     formData.append("data", jsonBlob);

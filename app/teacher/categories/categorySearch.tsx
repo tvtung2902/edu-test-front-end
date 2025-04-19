@@ -15,6 +15,9 @@ export default function CategorySearch() {
   const [search, setSearch] = useState(searchValue);
   const {status} = useSelector((state: RootState) => state.categories);
   const onSearch = (value: string) => {
+    console.log(value);
+    console.log(searchValue);
+    console.log(pathName);
     if (value !== searchValue) {
       router.push(`${pathName}?name=${value}`);
     }

@@ -10,3 +10,9 @@ export interface Group {
   isPublic: boolean;
   code: string;
 }
+
+export interface GroupRequestDTO {
+  name: string;
+  description: string;
+  changedImg?: boolean;
+}
