@@ -24,8 +24,15 @@ const initialState: CategoryState = {
 
 export const fetchCategories = createAsyncThunk(
   'categories/fetchCategories',
-  async ({ search = "", pageNo = 1, pageSize = pageSizeOfCategoryPage }: { search?: string; pageNo?: number; pageSize?: number }) => {
-    const response = await get<ApiGetListResponse<Category>>(`categories?name=${search}&page-no=${pageNo}&page-size=${pageSize}`);
+  async ({ search = "", pageNo = 1, pageSize = pageSizeOfCategoryPage, showAll = false }:
+     { search?: string; pageNo?: number; pageSize?: number, showAll?: boolean }) => {
+    let url = "";
+    if (showAll) {  
+      url = `categories?show-all=true`;
+    }
+    else url = `categories?name=${search}&page-no=${pageNo}&page-size=${pageSize}`;
+
+    const response = await get<ApiGetListResponse<Category>>(url);
     return response;
   }
 );

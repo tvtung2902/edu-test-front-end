@@ -1,31 +1,36 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { del, get, post, put } from "@/utils/request";
-import { ApiGetListResponse, ApiResponse } from "@/types/ApiResponse";
+import { del, get, post, postForFormData, put } from "@/utils/request";
+import { ApiGetListResponse, ApiGetResponse, ApiResponse } from "@/types/ApiResponse";
 import { Question } from "@/types/Question";
-
+import { pageSizeOfQuestionPage } from "@/const/teacher";
 interface QuestionState {
   questions: Question[];
   totalPages: number;
+  question: Question | null;
   status:
     | 'idle'
     | 'add loading'
     | 'update loading'
     | 'delete loading'
     | 'fetch loading'
+    | 'fetch detail loading'
     | 'add succeeded'
     | 'update succeeded'
     | 'delete succeeded'
     | 'fetch succeeded'
+    | 'fetch detail succeeded'
     | 'add failed'
     | 'update failed'
     | 'delete failed'
-    | 'fetch failed';
+    | 'fetch failed'
+    | 'fetch detail failed';
   error: string | null;
 }
 
 const initialState: QuestionState = {
   questions: [],
   totalPages: -1,
+  question: null,
   status: 'idle',
   error: null
 };
@@ -36,7 +41,7 @@ export const fetchQuestions = createAsyncThunk(
       content = '',
       categoryIds = [],
       pageNo = 0,
-      pageSize = 2
+      pageSize = pageSizeOfQuestionPage
     }: {
       content?: string;
       categoryIds?: number[];
@@ -60,10 +65,19 @@ export const fetchQuestions = createAsyncThunk(
     }
   );
   
+export const fetchQuestion = createAsyncThunk(
+  'questions/fetchQuestion',
+  async (id: number) => {
+    const response = await get<ApiGetResponse<Question>>(`questions/${id}`);
+    console.log("response", response);
+    return response;
+  }
+);
+
 export const addQuestion = createAsyncThunk(
   'questions/addQuestion',
-  async (question: Question) => {
-    const response = await post<ApiResponse>(`questions`, question);
+  async (formData: FormData) => {
+    const response = await postForFormData<ApiResponse>(`questions`, formData);
     return response;
   }
 );
@@ -109,6 +123,7 @@ const questionSlice = createSlice({
         state.status = 'add loading';
       })
       .addCase(addQuestion.fulfilled, (state, action) => {
+        console.log("action", action);
         if (action.payload.status === 201) {
           state.status = 'add succeeded';
         } else {
@@ -150,6 +165,17 @@ const questionSlice = createSlice({
       })
       .addCase(fetchQuestions.rejected, (state, action) => {
         state.status = 'fetch failed';
+        state.error = action.error.message || 'Đã xảy ra lỗi...';
+      })
+      .addCase(fetchQuestion.pending, (state) => {
+        state.status = 'fetch detail loading';
+      })
+      .addCase(fetchQuestion.fulfilled, (state, action) => {
+        state.status = 'fetch detail succeeded';
+        state.question = action.payload.response;
+      })
+      .addCase(fetchQuestion.rejected, (state, action) => {
+        state.status = 'fetch detail failed';
         state.error = action.error.message || 'Đã xảy ra lỗi...';
       });
   },

@@ -1,15 +1,18 @@
 'use client'
 
-import { RootState } from "@/redux/store/store";
+import { fetchCategories } from "@/redux/features/categorySlice";
+import { AppDispatch, RootState } from "@/redux/store/store";
 import { Input } from "antd";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 const { Search } = Input;
 
 export default function QuestionSearch() {
+  
   const router = useRouter();
   const pathName = usePathname();
+  
   const searchParam = useSearchParams();
   const content = searchParam.get('content') || "";
   const [search, setSearch] = useState(content);

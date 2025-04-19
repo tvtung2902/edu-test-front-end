@@ -9,6 +9,7 @@ import { fetchGroups } from "@/redux/features/groupSlice";
 export default function ShowMessage() {
     const { status: statusTest } = useSelector((state: RootState) => state.tests);
     const { status: statusGroup } = useSelector((state: RootState) => state.groups);
+    const { status: statusQuestion } = useSelector((state: RootState) => state.questions);
     const [messageApi, contextHolder] = message.useMessage();
     const dispatch = useDispatch<AppDispatch>();
     const dispatchGroup = useDispatch<AppDispatch>();
@@ -16,6 +17,53 @@ export default function ShowMessage() {
     const searchParams = useSearchParams();
     const pageNo = Number(searchParams.get('page-no')) || 1;
     const search = searchParams.get('name') || "";
+
+    const showStatusQuestions = () => {
+        if (statusQuestion.endsWith('succeeded') || statusQuestion.endsWith('failed')) {
+            messageApi.destroy();
+        }
+        switch (statusQuestion) {
+            case 'add succeeded':
+                messageApi.success('Thêm câu hỏi thành công');
+                break;
+            case 'delete succeeded':
+                messageApi.success('Xóa câu hỏi thành công');
+                break;
+            case 'update succeeded':
+                messageApi.success('Sửa câu hỏi thành công');
+                break;
+            case 'add failed':
+                messageApi.error('Thêm câu hỏi thất bại');
+                break;
+            case 'delete failed':
+                messageApi.error('Xóa câu hỏi thất bại');
+                break;
+            case 'update failed':
+                messageApi.error('Sửa câu hỏi thất bại');
+                break;
+            case 'add loading':
+                messageApi.open({
+                    type: 'loading',
+                    content: 'Đang thêm câu hỏi',
+                    duration: 0,
+                });
+                break;
+            case 'update loading':
+                messageApi.open({
+                    type: 'loading',
+                    content: 'Đang sửa câu hỏi',
+                    duration: 0,
+                });
+                break;  
+            case 'delete loading':
+                messageApi.open({
+                    type: 'loading',
+                    content: 'Đang xóa câu hỏi',
+                    duration: 0,
+                });
+                break;
+        }
+    }
 
     const showStatusTests = () => {
         if (statusTest.endsWith('succeeded') || statusTest.endsWith('failed')) {
@@ -129,7 +177,8 @@ export default function ShowMessage() {
     useEffect(() => {
         showStatusTests();
         showStatusGroups();
-    }, [statusTest, statusGroup]);
+        showStatusQuestions();
+    }, [statusTest, statusGroup, statusQuestion]);
 
     return <>{contextHolder}</>;
 }

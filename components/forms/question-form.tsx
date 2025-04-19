@@ -1,258 +1,246 @@
 "use client"
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { RadioGroupItem } from "@/components/ui/radio-group"
-import { Loader2, Plus, Trash2 } from "lucide-react"
 
-const questionFormSchema = z.object({
-  text: z.string().min(5, {
-    message: "Question text must be at least 5 characters.",
-  }),
-  type: z.enum(["single", "multiple"], {
-    required_error: "Please select a question type.",
-  }),
-  difficulty: z.enum(["easy", "medium", "hard"], {
-    required_error: "Please select a difficulty level.",
-  }),
-  options: z
-    .array(
-      z.object({
-        text: z.string().min(1, "Option text is required"),
-        isCorrect: z.boolean().default(false),
-      }),
-    )
-    .min(2, "At least 2 options are required"),
-})
+import type React from "react"
+import { Button, Form, Input, Radio, Select, Space, Card, Image, Typography, Checkbox, message, Upload, Row, Col, Flex } from "antd"
+import { PlusOutlined, DeleteOutlined, EyeOutlined, UploadOutlined } from '@ant-design/icons'
+import Category from "@/types/Category";
+import { Question } from "@/types/Question";
+import { addQuestion } from "@/redux/features/questionSlice";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store/store";
+import { Option as Choice  } from "@/types/Option";
 
-type QuestionFormValues = z.infer<typeof questionFormSchema>
+const { TextArea } = Input;
 
-interface QuestionFormProps {
-  initialData?: Partial<QuestionFormValues>
-  onSubmit: (data: QuestionFormValues) => void
-  isSubmitting?: boolean
-  mode?: "create" | "edit"
+type QuestionFormProps = {
+  initialData?: Question | null
+  onSubmit: (question: Omit<Question, "id">) => void
+  onCancel?: () => void,
+  categories: Category[]
 }
 
-export function QuestionForm({ initialData, onSubmit, isSubmitting = false, mode = "create" }: QuestionFormProps) {
-  const defaultOptions = initialData?.options || [
-    { text: "", isCorrect: false },
-    { text: "", isCorrect: false },
-  ]
+const initOption: Omit<Choice, "id">[] = [
+  {content: "", isCorrect: false },
+  {content: "", isCorrect: false },
+  {content: "", isCorrect: false },
+  {content: "", isCorrect: false },
+]
 
-  const form = useForm<QuestionFormValues>({
-    resolver: zodResolver(questionFormSchema),
-    defaultValues: {
-      text: initialData?.text || "",
-      type: initialData?.type || "single",
-      difficulty: initialData?.difficulty || "medium",
-      options: defaultOptions,
-    },
-  })
+export function QuestionForm({ initialData, onSubmit, onCancel, categories }: QuestionFormProps) {
+  const [form] = Form.useForm();
+  const dispatch = useDispatch<AppDispatch>();
 
-  const questionType = form.watch("type")
-  const options = form.watch("options")
+  const onFinish = (values: any) => {
+    const formData = new FormData();
+    console.log("values", values);
 
-  const addOption = () => {
-    const currentOptions = form.getValues("options")
-    form.setValue("options", [...currentOptions, { text: "", isCorrect: false }])
-  }
+    const imageQuestion = values.questionImage?.fileList?.[0]?.originFileObj;
+    if (imageQuestion) {
+      formData.append("imageQuestion", imageQuestion);
+    }
 
-  const removeOption = (index: number) => {
-    const currentOptions = form.getValues("options")
-    if (currentOptions.length <= 2) return
-    form.setValue(
-      "options",
-      currentOptions.filter((_, i) => i !== index),
-    )
-  }
+    const answers = values.options.map((option: any) => {
+      console.log("option", option);
+      console.log("option.is",option.isCorrect );
+      const base = {
+        content: option.content,
+        isCorrect: option.isCorrect, 
+      };
+  
+      const fileObj = option.image?.fileList?.[0]?.originFileObj;
+      if (fileObj) {
+        formData.append("imageAnswers", fileObj);
+      } else {
+        formData.append("imageAnswers", new Blob([]));
+      }
+      return base;
+    });
 
-  const handleSingleOptionChange = (index: number) => {
-    const currentOptions = form.getValues("options").map((option, i) => ({
-      ...option,
-      isCorrect: i === index,
-    }))
-    form.setValue("options", currentOptions)
-  }
+    const questionDto = {
+      content: values.content,
+      explanation: values.explanation,
+      categoryIds: values.categories || [],
+      choices: answers
+    }
+
+    const jsonBlob = new Blob([JSON.stringify(questionDto)], { type: 'application/json' });
+    formData.append("dataQuestion", jsonBlob);
+
+    dispatch(addQuestion(formData) as any);
+  };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="text"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Question Text</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="What is the value of x in the equation 2x + 5 = 15?"
-                  className="min-h-[100px]"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <Form
+      style={{
+        boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+        borderRadius: 10,
+        padding: 20,
+      }}
+      form={form}
+      layout="vertical"
+      onFinish={onFinish}
+      initialValues={{
+        content: initialData?.content || "",
+        options: initialData?.options || initOption,
+        categories: initialData?.categories || [],
+        explanation: initialData?.explanation || "",
+      }}
+    >
+      <Row>
+        <Col span={12}>
+          <Form.Item label="Ảnh mô tả" name="questionImage"
+          valuePropName="fileList"
+          getValueFromEvent={(e) => {
+            if (Array.isArray(e)) return e;
+            return e?.fileList;
+          }}>
+            <Upload
+              fileList={initialData?.image ? [{
+                uid: initialData?.image,
+                name: initialData?.image,
+                url: initialData?.image,
+              }] : []}
+              beforeUpload={() => false}
+              listType="picture"
+              maxCount={1}
+              accept="image/*"
+            >
+              <Button icon={<UploadOutlined />}>Chọn ảnh mô tả</Button>
+            </Upload>
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item label="Loại câu hỏi" name="categories">
+            <Select
+              mode="multiple"
+              allowClear
+              style={{ width: '100%' }}
+              placeholder="Chọn loại câu hỏi"
+              defaultValue={[]}
+              options={categories && categories.map(c => ({ label: c.name, value: c.id }))}
+            />
+          </Form.Item>
+        </Col>
+      </Row>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <FormField
-            control={form.control}
-            name="type"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Question Type</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select question type" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="single">Single Answer</SelectItem>
-                    <SelectItem value="multiple">Multiple Answers</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormDescription>
-                  {questionType === "single"
-                    ? "Students can select only one correct answer"
-                    : "Students can select multiple correct answers"}
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
+      <Form.Item
+        label="Nội dung câu hỏi"
+        name="content"
+        rules={[{ required: true, message: 'Vui lòng nhập nội dung câu hỏi' }]}
+      >
+        <TextArea rows={4} placeholder="Nhập nội dung câu hỏi" />
+      </Form.Item>
+
+      <Space direction="vertical" style={{ width: '100%' }} size={16}>
+        <Card>
+          <Form.List name="options">
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map(({ key, name, ...restField }, index) => (
+                  <Form.Item
+                    required
+                    key={key}
+                    label={`Đáp án ${String.fromCharCode(65 + index)}`}
+                    {...restField}
+                    rules={[{ required: true, message: 'Vui lòng nhập đáp án!' }]}
+                  >
+                    <Card size="small">
+                      <Flex gap={8}>
+
+                        <Form.Item
+                          name={[name, 'isCorrect']}
+                          valuePropName="checked"
+                          style={{ margin: 0 }}
+                        >
+                          <Checkbox />
+                        </Form.Item>
+
+                        <Form.Item
+                          name={[name, 'content']}
+                          style={{ flex: 1, margin: 0 }}
+                        >
+                          <Input
+                            style={{
+                              width: '100%',
+                              flex: 1,
+                              minWidth: 0,
+                            }}
+                            placeholder={`Đáp án ${String.fromCharCode(65 + index)}`}
+                          />
+                        </Form.Item>
+
+                        <Button
+                          danger
+                          type="text"
+                          icon={<DeleteOutlined />}
+                          onClick={() => {
+                            if (fields.length > 2) {
+                              remove(name);
+                            } else {
+                              message.warning('Tối thiểu 2 lựa chọn');
+                            }
+                          }}
+                        />
+                      </Flex>
+
+                      <div style={{ marginLeft: 24, marginTop: 8 }}>
+                        <Form.Item
+                          name={[name, 'image']}
+                          style={{ margin: 0 }}
+                        >
+                          <Upload
+                            beforeUpload={() => false}
+                            listType="picture"
+                            maxCount={1}
+                            accept="image/*"
+                          > 
+                            <Button icon={<UploadOutlined />}>Ảnh mô tả</Button>
+                          </Upload>
+                        </Form.Item>
+                      </div>
+                    </Card>
+                  </Form.Item>
+                ))}
+
+                <Button
+                  type="dashed"
+                  onClick={() => {
+                    if (fields.length < 8) {
+                      add();
+                    } else {
+                      message.warning('Tối đa 8 lựa chọn');
+                    }
+                  }}
+                  icon={<PlusOutlined />}
+                >
+                  Thêm lựa chọn
+                </Button>
+              </>
             )}
-          />
+          </Form.List>
+        </Card>
 
-          <FormField
-            control={form.control}
-            name="difficulty"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Difficulty Level</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select difficulty" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="easy">Easy</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="hard">Hard</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <Form.Item
+          label="Giải thích"
+          name="explanation"
+          rules={[{ required: true, message: 'Vui lòng nhập giải thích' }]}
+        >
+          <TextArea rows={4} placeholder="Nhập giải thích" />
+        </Form.Item>
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <FormLabel>Answer Options</FormLabel>
-            <Button type="button" variant="outline" size="sm" onClick={addOption}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Option
+        <Form.Item
+          style={{
+            margin: 0,
+          }}
+        >
+          <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
+            <Button onClick={onCancel}>Hủy</Button>
+            <Button type="primary" htmlType="submit">
+              {initialData ? "Cập nhật câu hỏi" : "Thêm câu hỏi"}
             </Button>
-          </div>
-
-          {questionType === "single" ? (
-            <div className="space-y-2">
-              {options.map((option, index) => (
-                <div key={index} className="flex items-center gap-2 space-y-0 py-2">
-                  <RadioGroupItem
-                    value={index.toString()}
-                    checked={option.isCorrect}
-                    onClick={() => handleSingleOptionChange(index)}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={`options.${index}.text`}
-                    render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormControl>
-                          <Input placeholder={`Option ${index + 1}`} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeOption(index)}
-                    disabled={options.length <= 2}
-                  >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {options.map((option, index) => (
-                <div key={index} className="flex items-center gap-2 space-y-0 py-2">
-                  <FormField
-                    control={form.control}
-                    name={`options.${index}.isCorrect`}
-                    render={({ field }) => (
-                      <FormItem className="flex items-center space-x-2 space-y-0">
-                        <FormControl>
-                          <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={`options.${index}.text`}
-                    render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormControl>
-                          <Input placeholder={`Option ${index + 1}`} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeOption(index)}
-                    disabled={options.length <= 2}
-                  >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {form.formState.errors.options?.message && (
-            <p className="text-sm font-medium text-destructive">{form.formState.errors.options?.message}</p>
-          )}
-        </div>
-
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {mode === "create" ? "Creating Question..." : "Updating Question..."}
-            </>
-          ) : (
-            <>{mode === "create" ? "Create Question" : "Update Question"}</>
-          )}
-        </Button>
-      </form>
+          </Space>
+        </Form.Item>
+      </Space>
     </Form>
-  )
+  );
 }
