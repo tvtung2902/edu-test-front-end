@@ -1,5 +1,5 @@
 import Category from "./Category";
-import { Option } from "./Option";
+import { Option, OptionRequestDTO } from "./Option";
 export interface Question {
     id: number;
     content: string;
@@ -10,3 +10,10 @@ export interface Question {
     createdAt: Date;
 }
   
+export interface QuestionDTO {
+  content: string;
+  explanation: string;
+  categoryIds: number[];
+  choices: OptionRequestDTO[];
+  changedImg?: boolean
+}

@@ -89,7 +89,7 @@ export default function QuestionList() {
       render: (categories: any[]) => (
         <Space>
           {categories?.map((category) => (
-            <Tag key={category.id} color="blue">
+            <Tag key={category.id} color="cyan">
               {category.name}
             </Tag>
           ))}

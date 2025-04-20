@@ -4,11 +4,11 @@ import type React from "react"
 import { Button, Form, Input, Radio, Select, Space, Card, Image, Typography, Checkbox, message, Upload, Row, Col, Flex } from "antd"
 import { PlusOutlined, DeleteOutlined, EyeOutlined, UploadOutlined } from '@ant-design/icons'
 import Category from "@/types/Category";
-import { Question } from "@/types/Question";
+import { Question, QuestionDTO } from "@/types/Question";
 import { addQuestion, updateQuestion } from "@/redux/features/questionSlice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
-import { Option as Choice } from "@/types/Option";
+import { Option as Choice, OptionRequestDTO } from "@/types/Option";
 
 const { TextArea } = Input;
 
@@ -41,28 +41,66 @@ export function QuestionForm({ initialData, isEdit, onCancel, categories }: Ques
       formData.append("imageQuestion", imageQuestion);
     }
 
-    const answers = values.options.map((option: any) => {
+    const initialImageOption = initialData?.options.map(
+      (option: Choice) => {
+        return option.image;
+      }
+    ) || [];
+
+    console.log("initialImageOption", initialImageOption);
+    const answers = values.options.map((option: any, index: number) => {
       console.log("option", option);
-      console.log("option.is", option.isCorrect);
-      const base = {
+      const base: OptionRequestDTO = {
+        id: isEdit ? initialData?.options?.[index]?.id : null,
         content: option.content,
         isCorrect: option.isCorrect,
       };
 
-      const fileObj = option.image?.fileList?.[0]?.originFileObj;
+      if (isEdit) {
+        const imageOptionInform: any[] = option.image;
+        // add choice
+        if(index + 1 > initialImageOption.length){
+          base.added = true;
+        }
+        else {
+          if(
+            !!(initialImageOption[index] && !imageOptionInform[0]?.url) || // sửa ảnh
+            !!(!initialImageOption[index] && imageOptionInform.length !== 0) || // thêm ảnh
+            !!(initialImageOption[index] && imageOptionInform.length === 0) // xóa ảnh
+          ){
+            base.changedImg = true;
+          }
+        }
+      }
+
+      const fileObj = option.image?.[0]?.originFileObj;
+
       if (fileObj) {
         formData.append("imageAnswers", fileObj);
       } else {
+        // Nếu không có file thì append blob rỗng để giữ đúng số lượng
         formData.append("imageAnswers", new Blob([]));
       }
+
       return base;
     });
 
-    const questionDto = {
+
+    const questionDto: QuestionDTO = {
       content: values.content,
       explanation: values.explanation,
       categoryIds: values.categories || [],
-      choices: answers
+      choices: answers,
+    }
+
+    if (isEdit) {
+      const hasImageChanged = !!(initialData?.image && !values.questionImage?.[0]?.url) ||
+        !!(!initialData?.image && values.questionImage.length !== 0) ||
+        !!(initialData?.image && values.questionImage.length === 0);
+
+      if (hasImageChanged) {
+        questionDto.changedImg = true;
+      }
     }
 
     const jsonBlob = new Blob([JSON.stringify(questionDto)], { type: 'application/json' });
@@ -93,7 +131,7 @@ export function QuestionForm({ initialData, isEdit, onCancel, categories }: Ques
           ? [
             {
               uid: '-1',
-              name: 'ảnh mô tả câu hỏi',
+              name: 'Ảnh mô tả câu hỏi',
               status: 'done',
               url: initialData.image,
             },
@@ -106,7 +144,7 @@ export function QuestionForm({ initialData, isEdit, onCancel, categories }: Ques
             image: option.image ? [
               {
                 uid: -1 * index,
-                name: 'ảnh mô tả đáp án ' + String.fromCharCode(65 + index),
+                name: 'Ảnh mô tả đáp án ' + String.fromCharCode(65 + index),
                 status: 'done',
                 url: option.image,
               },
@@ -125,11 +163,6 @@ export function QuestionForm({ initialData, isEdit, onCancel, categories }: Ques
               return e?.fileList;
             }}>
             <Upload
-              // fileList={initialData?.image ? [{
-              //   uid: initialData?.image,
-              //   name: initialData?.image,
-              //   url: initialData?.image,
-              // }] : []}
               beforeUpload={() => false}
               listType="picture"
               maxCount={1}
@@ -223,7 +256,7 @@ export function QuestionForm({ initialData, isEdit, onCancel, categories }: Ques
                             if (Array.isArray(e)) return e;
                             return e?.fileList;
                           }}
-                        >  
+                        >
                           <Upload
                             beforeUpload={() => false}
                             listType="picture"

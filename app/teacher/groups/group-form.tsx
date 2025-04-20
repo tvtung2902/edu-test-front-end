@@ -46,9 +46,9 @@ const GroupForm = ({ initialValues, isEdit = false, handleCloseModal }: GroupFor
     };
     
     if(isEdit){
-      const hasImageChanged = !!(initialValues?.image && !values.image?.[0]?.url) ||
-        !!(!initialValues?.image && values.image.length !== 0) ||
-        !!(initialValues?.image && values.image.length === 0);
+      const hasImageChanged = !!(initialValues?.image && !values.image?.[0]?.url) || // sửa ảnh
+        !!(!initialValues?.image && values.image.length !== 0) || // thêm ảnh
+        !!(initialValues?.image && values.image.length === 0); // xóa ảnh
       
       if (hasImageChanged) {
         dto.changedImg = true;
