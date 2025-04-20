@@ -1,7 +1,9 @@
+import { TestCreator } from "@/components/question-in-test/test-creator";
+
 export default function QuestionsPage() {
     return (
-        <div>
-            <h1>Questions</h1>
-        </div>
+        <>
+            <TestCreator />
+        </>
     )
 }

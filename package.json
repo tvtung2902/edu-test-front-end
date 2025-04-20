@@ -52,6 +52,8 @@
     "react": "^19",
     "react-beautiful-dnd": "latest",
     "react-day-picker": "8.10.1",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^19",
     "react-hook-form": "latest",
     "react-redux": "^9.2.0",
