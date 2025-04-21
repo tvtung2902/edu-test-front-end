@@ -1,4 +1,4 @@
-interface UserGroup {
+export interface UserGroup {
     id: number;
     name: string;
     avatar: string;

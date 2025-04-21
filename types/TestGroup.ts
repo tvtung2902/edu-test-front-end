@@ -10,5 +10,4 @@ interface TestGroup {
     status: 'incoming' | 'ongoing' | 'completed';
     users: Participant[];
 }
-
 export type { TestGroup, Participant };
