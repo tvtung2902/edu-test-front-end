@@ -20,7 +20,7 @@ export default function PaginationUI({ pageNo, totalPages }: PaginationType) {
     };
     
     return (
-        totalPages > 0 && (
+         true && (
             <Pagination
                 showSizeChanger={false}
                 defaultCurrent={pageNo}
