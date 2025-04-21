@@ -17,7 +17,7 @@ export default function TeacherLayout({
         <TeacherSidebar />
         <SidebarInset className="flex flex-col">
           <TeacherHeader />
-          <main className="flex-1 overflow-auto p-6">{children}</main>
+          <main style={{backgroundColor: '#F5F5F5'}} className="flex-1 overflow-auto p-6">{children}</main>
         </SidebarInset>
     </SidebarProvider>
   )
