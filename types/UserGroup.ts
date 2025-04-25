@@ -3,5 +3,6 @@ export interface UserGroup {
     name: string;
     avatar: string;
     username: string;
-    status: 'pending' | 'accepted' 
+    email: string;
+    status: 'PENDING' | 'JOINED' 
 }

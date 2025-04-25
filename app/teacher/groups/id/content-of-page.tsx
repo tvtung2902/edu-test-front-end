@@ -9,27 +9,43 @@ import UserSearch from "./user-search";
 import ViewToggleTest from "./test-segmented ";
 import ViewToggleUser from "./user-segmented";
 import GroupPagination from "./pagination";
-import type { TestGroup, Participant } from "@/types/TestGroup";
+import type { TestGroupWithStatus } from "@/types/TestGroup";
+import { Group } from "@/types/Group";
 
 const { TabPane } = Tabs;
-const { Title, Text } = Typography;
+const { Text } = Typography;
 const { Search } = Input;
 
 // Mock data for tests
-const testList = [
-    { id: 1, title: 'Kiểm tra giữa kỳ', date: '2024-04-20', status: 'active' },
-    { id: 2, title: 'Bài kiểm tra 15 phút', date: '2024-04-15', status: 'completed' },
-    { id: 3, title: 'Bài kiểm tra cuối kỳ', date: '2024-05-20', status: 'upcoming' },
-    { id: 11, title: 'Kiểm tra giữa kỳ', date: '2024-04-20', status: 'active' },
-    { id: 12, title: 'Bài kiểm tra 15 phút', date: '2024-04-15', status: 'completed' },
-    { id: 13, title: 'Bài kiểm tra cuối kỳ', date: '2024-05-20', status: 'upcoming' }
+const testList: TestGroupWithStatus[] = [
+    { id: 1, image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=1', name: 'Kiểm tra giữa kỳ', startDate: '2024-04-20', endDate: '2024-05-20', status: 'ended' },
+    { id: 2, image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=2', name: 'Bài kiểm tra 15 phút', startDate: '2024-04-15', endDate: '2024-05-20', status: 'ended' },
+    { id: 3, image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=3', name: 'Bài kiểm tra cuối kỳ', startDate: '2024-05-20', endDate: '2024-05-20', status: 'incoming' },
+    { id: 11, image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=11', name: 'Kiểm tra giữa kỳ', startDate: '2024-04-20', endDate: '2024-05-20', status: 'ongoing',
+        users: [
+            { id: 1, name: 'Nguyễn Văn A', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=1' },
+            { id: 2, name: 'Trần Thị B', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=2' },
+            { id: 3, name: 'Lê Văn C', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=3' },
+        ]
+     },
+    { id: 12, image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=12', name: 'Bài kiểm tra 15 phút', startDate: '2024-04-15', endDate: '2024-05-20', status: 'ongoing' },
+    { id: 13, image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=13', name: 'Bài kiểm tra cuối kỳ', startDate: '2024-05-20', endDate: '2024-05-20', status: 'ended',
+        users: [
+            { id: 1, name: 'Nguyễn Văn A', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=1' },
+            { id: 2, name: 'Trần Thị B', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=2' },
+            { id: 3, name: 'Lê Văn C', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=3' },
+        ]
+     }
 ];
 
 // Mock data for test group
-const testGroup: TestGroup = {
+const testGroup: TestGroupWithStatus = {
     id: 1,
+    image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=1',
     name: 'Lớp học khoa học công nghệ',
     status: 'ongoing',
+    startDate: '2024-04-20',
+    endDate: '2024-05-20',
     users: [
         {
             id: 1,
@@ -56,14 +72,11 @@ const availableTests = [
     { id: 103, title: 'Kiểm tra cuối kỳ', subject: 'Hóa học', duration: '90 phút' },
 ];
 
-// Mock data for available members to add
-const availableMembers = [
-    { id: 201, name: 'Nguyễn Văn X', email: 'x@example.com', role: 'student' },
-    { id: 202, name: 'Trần Thị Y', email: 'y@example.com', role: 'student' },
-    { id: 203, name: 'Lê Văn Z', email: 'z@example.com', role: 'student' },
-];
+interface ContentOfGroupDetailPageProps {
+    group: Group | null;
+}
 
-const GroupDetailPage = () => {
+const ContentOfGroupDetailPage = ({ group }: ContentOfGroupDetailPageProps) => {
     const [activeTab, setActiveTab] = useState('1');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedItems, setSelectedItems] = useState<number[]>([]);
@@ -234,16 +247,15 @@ const GroupDetailPage = () => {
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {testList.map((item) => (
-                                <TestCard 
+                                <TestCard
+                                    group={group}
                                     key={item.id}
-                                    title={item.title}
-                                    status={item.status}
-                                    date={item.date}
+                                    testGroup={item as TestGroupWithStatus}
                                 />
                             ))}
                         </div>
                         <div className="flex flex-row justify-end">
-                            <GroupPagination />
+                            <GroupPagination totalPages={0} />
                         </div>
                     </>
                 )}
@@ -251,12 +263,12 @@ const GroupDetailPage = () => {
                 {activeTab === '2' && (
                     <>
                         <div className="flex flex-col gap-4">
-                            {testGroup.users.map((user) => (
+                            {testGroup.users?.map((user) => (
                                 <UserCard key={user.id} user={user} />
                             ))}
                         </div>
                         <div className="flex flex-row justify-end">
-                            <GroupPagination />
+                            <GroupPagination totalPages={2} />
                         </div>
                     </>
                 )}
@@ -265,4 +277,4 @@ const GroupDetailPage = () => {
     );
 };
 
-export default GroupDetailPage;
+export default ContentOfGroupDetailPage;

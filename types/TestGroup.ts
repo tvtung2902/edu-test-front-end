@@ -7,7 +7,18 @@ interface Participant {
 interface TestGroup {
     id: number;
     name: string;
-    status: 'incoming' | 'ongoing' | 'completed';
-    users: Participant[];
+    image: string;
+    startDate: string;
+    endDate: string;
+    users?: Participant[];
 }
-export type { TestGroup, Participant };
+
+type TestStatus = 'incoming' | 'ongoing' | 'ended';
+
+interface TestGroupWithStatus extends TestGroup {
+    status: TestStatus;
+}
+
+
+export type { TestGroup, Participant, TestGroupWithStatus, TestStatus };
+

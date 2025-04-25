@@ -5,9 +5,6 @@ import { EllipsisOutlined, DeleteOutlined, EyeOutlined, UserOutlined, Exclamatio
 import type { TestGroupWithStatus, TestStatus } from '@/types/TestGroup';
 import { Group } from '@/types/Group';
 import { useRouter } from 'next/navigation';
-import { deleteTestGroup } from '@/redux/features/testGroupSlice';
-import { AppDispatch } from '@/redux/store/store';
-import { useDispatch } from 'react-redux';
 const { Title, Text } = Typography;
 
 interface TestCardProps {
@@ -19,11 +16,11 @@ const TestCard: React.FC<TestCardProps> = ({ group, testGroup }: TestCardProps) 
     const router = useRouter();
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const dispatch = useDispatch<AppDispatch>();
+
     const handleDelete = async () => {
         setDeleteLoading(true);
         try {
-            dispatch(deleteTestGroup({ groupId: Number(group?.id), testGroupId: testGroup.id }) as any);
+            // Add your delete logic here
             console.log('Deleting test:', testGroup.id);
         } finally {
             setDeleteLoading(false);

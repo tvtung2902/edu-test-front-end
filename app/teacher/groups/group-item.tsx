@@ -31,7 +31,7 @@ interface GroupItemProps {
 export default function GroupItem({ group, handleEdit, handleDelete }: GroupItemProps) {
   return (
     <>
-      <Link href={`/teacher/groups/${group.id}`}>
+      <Link href={`/teacher/groups/${group.id}/tests`}>
         <Card key={group.id} className="overflow-hidden">
           <div className="relative h-[140px] w-full overflow-hidden bg-muted">
             <Image src={group.image || "/placeholder.svg"} alt={group.name} fill className="object-cover" />
