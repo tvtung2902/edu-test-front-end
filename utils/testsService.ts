@@ -8,3 +8,10 @@ export const getTestDetail = async (id: string): Promise<Test> => {
     const res = await get<ApiGetResponse<Test>>(path);
     return res.response;
 };
+
+export const fetchAvailableTests = async (groupId: number): Promise<any[]> => {
+    const path: string = `groups/${groupId}/tests/unassigned`;
+    const res = await get<ApiGetResponse<any[]>>(path);
+    console.log("resssssssssssssssssssssssss", res);
+    return res.response;
+};

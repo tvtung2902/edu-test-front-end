@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { QuestionList } from "./question-list"
 import { TestPreview } from "./test-preview"
 import { Save, FileDown } from "lucide-react"
-import { QuestionForm } from "../forms/question-form"
+import QuestionForm from "../forms/question-form"
 
 export type QuestionType = "single" | "multiple"
 
@@ -38,9 +38,28 @@ export function TestCreator() {
       //fake data
       id: `question-${Date.now()}`,
       text: "What is the capital of France?",
-      imageUrl: "https://via.placeholder.com/150",
+      imageUrl: "https://d1hjkbq40fs2x4.cloudfront.net/2017-08-21/files/landscape-photography_1645.jpg",
       type: "single" as QuestionType,
-      options: [],
+      options: [
+        {
+          id: "1",
+          text: "Paris",
+          isCorrect: true,
+          imageUrl: "https://d1hjkbq40fs2x4.cloudfront.net/2017-08-21/files/landscape-photography_1645.jpg"
+        },
+        {
+          id: "2",
+          text: "Paris",
+          isCorrect: true,
+          imageUrl: "https://d1hjkbq40fs2x4.cloudfront.net/2017-08-21/files/landscape-photography_1645.jpg"
+        },
+        {
+          id: "3",
+          text: "Paris",
+          isCorrect: true,
+          imageUrl: "https://d1hjkbq40fs2x4.cloudfront.net/2017-08-21/files/landscape-photography_1645.jpg"
+        }
+      ],
     }
     setQuestions([...questions, newQuestion])
   }

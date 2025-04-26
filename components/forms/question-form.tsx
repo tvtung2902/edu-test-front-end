@@ -1,14 +1,16 @@
 "use client"
 
 import type React from "react"
-import { Button, Form, Input, Radio, Select, Space, Card, Image, Typography, Checkbox, message, Upload, Row, Col, Flex } from "antd"
-import { PlusOutlined, DeleteOutlined, EyeOutlined, UploadOutlined } from '@ant-design/icons'
+import { Button, Form, Input, Select, Space, Card, Checkbox, message, Upload, Row, Col, Flex } from "antd"
+import { PlusOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons'
 import Category from "@/types/Category";
 import { Question, QuestionDTO } from "@/types/Question";
 import { addQuestion, updateQuestion } from "@/redux/features/questionSlice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
 import { Option as Choice, OptionRequestDTO } from "@/types/Option";
+import { addQuestionToTest, updateQuestionInTest } from "@/redux/features/questionTestSlice";
+import { useEffect } from "react";
 
 const { TextArea } = Input;
 
@@ -17,7 +19,9 @@ type QuestionFormProps = {
   onSubmit: (question: Omit<Question, "id">) => void
   onCancel?: () => void,
   categories: Category[],
-  isEdit: boolean
+  isEdit: boolean,
+  type?: "QUESTION_PAGE" | "TEST_PAGE",
+  testId?: number
 }
 
 const initOption: Omit<Choice, "id">[] = [
@@ -27,7 +31,7 @@ const initOption: Omit<Choice, "id">[] = [
   { content: "", isCorrect: false },
 ]
 
-export function QuestionForm({ initialData, isEdit, onCancel, categories }: QuestionFormProps) {
+const QuestionForm = ({ initialData, isEdit, onCancel, categories, type = "QUESTION_PAGE", testId }: QuestionFormProps) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -47,9 +51,7 @@ export function QuestionForm({ initialData, isEdit, onCancel, categories }: Ques
       }
     ) || [];
 
-    console.log("initialImageOption", initialImageOption);
     const answers = values.options.map((option: any, index: number) => {
-      console.log("option", option);
       const base: OptionRequestDTO = {
         id: isEdit ? initialData?.options?.[index]?.id : null,
         content: option.content,
@@ -59,15 +61,15 @@ export function QuestionForm({ initialData, isEdit, onCancel, categories }: Ques
       if (isEdit) {
         const imageOptionInform: any[] = option.image;
         // add choice
-        if(index + 1 > initialImageOption.length){
+        if (index + 1 > initialImageOption.length) {
           base.added = true;
         }
         else {
-          if(
+          if (
             !!(initialImageOption[index] && !imageOptionInform[0]?.url) || // sửa ảnh
             !!(!initialImageOption[index] && imageOptionInform.length !== 0) || // thêm ảnh
             !!(initialImageOption[index] && imageOptionInform.length === 0) // xóa ảnh
-          ){
+          ) {
             base.changedImg = true;
           }
         }
@@ -106,15 +108,68 @@ export function QuestionForm({ initialData, isEdit, onCancel, categories }: Ques
     const jsonBlob = new Blob([JSON.stringify(questionDto)], { type: 'application/json' });
     formData.append("dataQuestion", jsonBlob);
 
-    if (isEdit) {
-      dispatch(updateQuestion({ question: formData, id: initialData?.id || -1 }) as any);
-    } else {
-      dispatch(addQuestion(formData) as any);
+    if (type === "QUESTION_PAGE") {
+      if (isEdit) {
+        dispatch(updateQuestion({ question: formData, id: initialData?.id || -1 }) as any);
+        console.log("update question", initialData?.id);
+      } else {
+        dispatch(addQuestion(formData) as any);
+      }
+    }
+    else if (type === "TEST_PAGE") {
+      if (isEdit) {
+        dispatch(updateQuestionInTest({ question: formData, id: initialData?.id || -1, questionDTO: questionDto }) as any);
+      } else {
+        dispatch(addQuestionToTest({ testId: testId || -1, formData }) as any);
+      }
     }
   };
 
+  const handleCancel = () => {
+    onCancel?.();
+  };
+
+  useEffect(() => {
+    if (initialData) {
+      form.setFieldsValue({
+        content: initialData.content,
+        categories: initialData.categories.map((category: Category) => category.id),
+        explanation: initialData.explanation,
+        questionImage: initialData.image
+          ? [
+            {
+              uid: '-1',
+              name: 'Ảnh mô tả câu hỏi',
+              status: 'done',
+              url: initialData.image,
+            },
+          ]
+          : [],
+        options: initialData.options.map((option: Choice, index: number) => ({
+          content: option.content,
+          isCorrect: option.isCorrect,
+          image: option.image
+            ? [
+              {
+                uid: -1 * index,
+                name: 'Ảnh mô tả đáp án ' + String.fromCharCode(65 + index),
+                status: 'done',
+                url: option.image,
+              },
+            ]
+            : [],
+        })),
+      });
+    }
+    else {
+      form.resetFields();
+    }
+  }, [initialData]);
+
+
   return (
     <Form
+      className="bg-white"
       style={{
         boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
         borderRadius: 10,
@@ -303,7 +358,7 @@ export function QuestionForm({ initialData, isEdit, onCancel, categories }: Ques
           }}
         >
           <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
-            <Button onClick={onCancel}>Hủy</Button>
+            <Button onClick={handleCancel}>Hủy</Button>
             <Button type="primary" htmlType="submit">
               {initialData ? "Cập nhật câu hỏi" : "Thêm câu hỏi"}
             </Button>
@@ -313,3 +368,5 @@ export function QuestionForm({ initialData, isEdit, onCancel, categories }: Ques
     </Form>
   );
 }
+
+export default QuestionForm;

@@ -41,12 +41,14 @@ export const fetchQuestions = createAsyncThunk(
       content = '',
       categoryIds = [],
       pageNo = 0,
-      pageSize = pageSizeOfQuestionPage
+      pageSize = pageSizeOfQuestionPage,
+      testUnAssignedId = null
     }: {
       content?: string;
       categoryIds?: number[];
       pageNo?: number;
       pageSize?: number;
+      testUnAssignedId?: number | null;
     }) => {
       const params = new URLSearchParams();
       params.append('content', content);
@@ -56,7 +58,9 @@ export const fetchQuestions = createAsyncThunk(
       categoryIds.forEach(id => {
         params.append('categoryIds', id.toString());
       });
-  
+      if (testUnAssignedId) {
+        params.append('unassigned-test', testUnAssignedId.toString());
+      }
       const path = `questions?${params.toString()}`;
       console.log("path", path);
       const response = await get<ApiGetListResponse<Question>>(path);
