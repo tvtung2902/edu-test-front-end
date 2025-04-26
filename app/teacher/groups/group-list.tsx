@@ -1,14 +1,13 @@
 'use client'
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { deleteGroup, fetchGroupDetail, fetchGroups } from "@/redux/features/groupSlice"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { Modal } from "antd"
-import { useSelector } from "react-redux"
-import { RootState } from "@/redux/store/store"
-import { useEffect, useState } from "react"
 import { ExclamationCircleOutlined } from "@ant-design/icons"
+import { useEffect, useState } from "react"
 import GroupItem from "./group-item"
 import GroupForm from "./group-form"
+import { RootState } from "@/redux/store/store"
 import { Group } from "@/types/Group"
 
 const GroupList = () => {
@@ -81,6 +80,7 @@ const GroupList = () => {
           onCancel={handleCancelEdit}
           footer={null}
           width={600}
+          destroyOnClose
         >
           <GroupForm
             initialValues={groupEdit}

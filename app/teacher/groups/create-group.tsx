@@ -1,20 +1,9 @@
 'use client'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "@/components/ui/card"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Modal } from "antd"
-import { FileQuestion, MoreHorizontal, Plus, Search, Share2, Users, UsersRound } from "lucide-react"
-import GroupForm from "./group-form"
-import { useState } from "react"
+import { Card, Button, Modal } from "antd";
+import { PlusOutlined, UsergroupAddOutlined } from "@ant-design/icons";
+import GroupForm from "./group-form";
+import { useState } from "react";
+
 export default function CreateGroup() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -28,29 +17,38 @@ export default function CreateGroup() {
 
     return (
         <>
-            <Card className="mt-6 border-dashed">
-                <CardContent className="flex flex-col items-center justify-center p-6">
-                    <div className="mb-4 rounded-full bg-primary/10 p-3">
-                        <UsersRound className="h-6 w-6 text-primary" />
+            <Card
+                className="mt-6 border-dashed text-center shadow-box-white"
+                bordered
+                style={{ borderStyle: "dashed" }}
+            >
+                <div className="flex flex-col items-center justify-center p-6">
+                    <div className="mb-4 rounded-full bg-blue-50 p-3">
+                        <UsergroupAddOutlined className="text-blue-500 text-2xl" />
                     </div>
-                    <h3 className="mb-2 text-lg font-medium">Create a New Group</h3>
-                    <p className="mb-4 text-center text-sm text-muted-foreground">
-                        Create a new group to organize your students and assign tests
+                    <h3 className="mb-2 text-lg font-medium">Tạo nhóm mới</h3>
+                    <p className="mb-4 text-center text-sm text-gray-500">
+                        Tạo nhóm để tổ chức học sinh và phân công bài kiểm tra dễ dàng hơn
                     </p>
-                    <Button onClick={showModal}>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Create Group
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={showModal}
+                        size="middle"
+                    >
+                        Tạo nhóm
                     </Button>
-                </CardContent>
+                </div>
             </Card>
             <Modal
-                title="Create New Group"
+                title="Tạo nhóm mới"
                 open={isModalOpen}
                 onCancel={handleCancel}
                 footer={null}
+                destroyOnClose
             >
                 <GroupForm handleCloseModal={handleCancel} />
             </Modal>
         </>
-    )
+    );
 }

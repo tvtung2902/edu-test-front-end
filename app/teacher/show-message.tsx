@@ -10,6 +10,7 @@ import { fetchTestGroups } from "@/redux/features/testGroupSlice";
 import { TestStatus } from "@/types/TestGroup";
 import { fetchUserGroups } from "@/redux/features/userGroupSlice";
 import { fetchQuestionsInTest } from "@/redux/features/questionTestSlice";
+import { fetchCategories } from "@/redux/features/categorySlice";
 
 export default function ShowMessage() {
     const { status: statusTest } = useSelector((state: RootState) => state.tests);
@@ -18,6 +19,7 @@ export default function ShowMessage() {
     const { status: statusTestGroup } = useSelector((state: RootState) => state.testGroups);
     const { status: statusUserGroup } = useSelector((state: RootState) => state.userGroups);
     const { status: statusQuestionTest } = useSelector((state: RootState) => state.questionTest);
+    const { status: statusCategory } = useSelector((state: RootState) => state.categories);
 
     const [messageApi, contextHolder] = message.useMessage();
     const dispatch = useDispatch<AppDispatch>();
@@ -31,6 +33,54 @@ export default function ShowMessage() {
     const status = searchParams.get('status') || "";
     const testId = Number(searchParams.get('testId')) || 1;
 
+    const showStatusCategory = () => {
+        if (statusCategory.endsWith('succeeded') || statusCategory.endsWith('failed')) {
+            messageApi.destroy();
+        }
+        switch (statusCategory) {
+            case 'add succeeded':
+                messageApi.success('Thêm danh mục thành công');
+                dispatch(fetchCategories({ search, pageNo }) as any);
+                break;
+            case 'delete succeeded':
+                messageApi.success('Xóa danh mục thành công');
+                dispatch(fetchCategories({ search, pageNo }) as any);
+                break;
+            case 'update succeeded':
+                messageApi.success('Sửa danh mục thành công');
+                break;
+            case 'add failed':
+                messageApi.error('Thêm danh mục thất bại');
+                break;
+            case 'update failed':
+                messageApi.error('Sửa danh mục thất bại');
+                break;
+            case 'delete failed':
+                messageApi.error('Xóa danh mục thất bại');
+                break;
+            case 'add loading':
+                messageApi.open({
+                    type: 'loading',
+                    content: 'Đang thêm danh mục',
+                    duration: 0,
+                });
+                break;
+            case 'update loading':
+                messageApi.open({
+                    type: 'loading',
+                    content: 'Đang sửa danh mục',
+                    duration: 0,
+                });
+                break;
+            case 'delete loading':
+                messageApi.open({
+                    type: 'loading',
+                    content: 'Đang xóa danh mục',
+                    duration: 0,
+                });
+                break;
+        }
+    }
     const showStatusUserGroup = () => {
         if (statusUserGroup.endsWith('succeeded') || statusUserGroup.endsWith('failed')) {
             messageApi.destroy();
@@ -309,7 +359,8 @@ export default function ShowMessage() {
         showStatusTestGroups();
         showStatusUserGroup();
         showStatusQuestionTest();
-    }, [statusTest, statusGroup, statusQuestion, statusTestGroup, statusUserGroup, statusQuestionTest]);
+        showStatusCategory();
+    }, [statusTest, statusGroup, statusQuestion, statusTestGroup, statusUserGroup, statusQuestionTest, statusCategory]);
 
     return <>{contextHolder}</>;
 }

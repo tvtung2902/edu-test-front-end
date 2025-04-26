@@ -1,10 +1,9 @@
 'use client'
 
-import { Form, Input, Modal } from "antd";
+import { Form, Input, Modal, Button } from "antd";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { PlusOutlined } from "@ant-design/icons";
 import { AppDispatch } from "@/redux/store/store";
 import { addCategory } from "@/redux/features/categorySlice";
 
@@ -31,11 +30,10 @@ export default function ModalAdd() {
 
     return (
         <>
-            <Button size="sm" onClick={() => setOpen(true)}>
-                <Plus className="mr-2 h-4 w-4" />
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => setOpen(true)}>
                 Thêm danh mục
             </Button>
-            <Modal open={open} onCancel={onCancel} onOk={onOk}>
+            <Modal open={open} onCancel={onCancel} onOk={onOk} title="Thêm danh mục">
                 <Form
                     form={form}
                     layout="vertical"

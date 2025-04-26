@@ -79,8 +79,6 @@ const EditTestForm = ({ test }: EditTestFormProps) => {
       form={form}
       layout="vertical"
       onFinish={onFinish}
-      style={{ maxWidth: 600, margin: "auto" }}
-
     >
       <Form.Item
         label="Tên đề thi"

@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store/store";
 import { useEffect } from "react";
 import { fetchCategories } from "@/redux/features/categorySlice";
-import { QuestionForm } from "@/components/forms/question-form";
+import QuestionForm from "@/components/forms/question-form";
 
 export default function ContentQuestionPage() {
     const { categories } = useSelector((state: RootState) => state.categories);

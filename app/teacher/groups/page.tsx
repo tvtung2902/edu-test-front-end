@@ -20,7 +20,7 @@ import CreateGroup from "./create-group"
 export default function GroupsPage() {
   return (
     <div className="space-y-6">
-      <CreateGroup />
+      <CreateGroup /> 
       <div className="flex justify-end">
         <GroupSearch />
       </div>
