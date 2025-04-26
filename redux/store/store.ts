@@ -6,6 +6,7 @@ import groupReducer from '../features/groupSlice';
 import questionReducer from '../features/questionSlice';
 import testGroupReducer from '../features/testGroupSlice';
 import userGroupReducer from '../features/userGroupSlice';
+import questionTestReducer from '../features/questionTestSlice';
 export const store = configureStore({
   reducer: {
     categories: categoryReducer,
@@ -14,6 +15,7 @@ export const store = configureStore({
     questions: questionReducer,
     testGroups: testGroupReducer,
     userGroups: userGroupReducer,
+    questionTest: questionTestReducer,
   },
 });
 

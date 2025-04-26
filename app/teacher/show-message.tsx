@@ -9,12 +9,15 @@ import { fetchQuestions } from "@/redux/features/questionSlice";
 import { fetchTestGroups } from "@/redux/features/testGroupSlice";
 import { TestStatus } from "@/types/TestGroup";
 import { fetchUserGroups } from "@/redux/features/userGroupSlice";
+import { fetchQuestionsInTest } from "@/redux/features/questionTestSlice";
+
 export default function ShowMessage() {
     const { status: statusTest } = useSelector((state: RootState) => state.tests);
     const { status: statusGroup } = useSelector((state: RootState) => state.groups);
     const { status: statusQuestion } = useSelector((state: RootState) => state.questions);
     const { status: statusTestGroup } = useSelector((state: RootState) => state.testGroups);
     const { status: statusUserGroup } = useSelector((state: RootState) => state.userGroups);
+    const { status: statusQuestionTest } = useSelector((state: RootState) => state.questionTest);
 
     const [messageApi, contextHolder] = message.useMessage();
     const dispatch = useDispatch<AppDispatch>();
@@ -26,6 +29,7 @@ export default function ShowMessage() {
     const content = searchParams.get('content') || "";
     const categoryIds = searchParams.get('categoryIds')?.split(',').map(Number) || [];
     const status = searchParams.get('status') || "";
+    const testId = Number(searchParams.get('testId')) || 1;
 
     const showStatusUserGroup = () => {
         if (statusUserGroup.endsWith('succeeded') || statusUserGroup.endsWith('failed')) {
@@ -68,6 +72,7 @@ export default function ShowMessage() {
                 messageApi.success('Xóa các đề thi khỏi nhóm thành công');
                 dispatchGroup(fetchTestGroups({ groupId: 1, search, pageNo, status: status as TestStatus }) as any);
                 break;
+                
             case 'add failed':  
                 messageApi.error('Thêm các đề thi vào nhóm thất bại');
                 break;
@@ -247,14 +252,64 @@ export default function ShowMessage() {
                 break;
         }
     };
+    
+    const showStatusQuestionTest = () => {
+        if (statusQuestionTest.endsWith('succeeded') || statusQuestionTest.endsWith('failed')) {
+            messageApi.destroy();
+        }
+        switch (statusQuestionTest) {
+            case 'add succeeded':
+                messageApi.success('Thêm câu hỏi vào đề thi thành công');
+                dispatch(fetchQuestionsInTest({ testId }) as any);
+                break;
+            case 'delete succeeded':
+                messageApi.success('Xóa câu hỏi khỏi đề thi thành công');
+                dispatch(fetchQuestionsInTest({ testId }) as any);
+                break;
+            case 'update succeeded':
+                messageApi.success('Cập nhật câu hỏi trong đề thi thành công');
+                break;
+            case 'add failed':
+                messageApi.error('Thêm câu hỏi vào đề thi thất bại');
+                break;
+            case 'delete failed':
+                messageApi.error('Xóa câu hỏi khỏi đề thi thất bại');
+                break;
+            case 'update failed':
+                messageApi.error('Cập nhật câu hỏi trong đề thi thất bại');
+                break;
+            case 'add loading':
+                messageApi.open({
+                    type: 'loading',
+                    content: 'Đang thêm câu hỏi vào đề thi',
+                    duration: 0,
+                });
+                break;
+            case 'update loading':
+                messageApi.open({
+                    type: 'loading',
+                    content: 'Đang cập nhật câu hỏi trong đề thi',
+                    duration: 0,
+                });
+                break;
+            case 'delete loading':
+                messageApi.open({
+                    type: 'loading',
+                    content: 'Đang xóa câu hỏi khỏi đề thi',
+                    duration: 0,
+                });
+                break;
+        }
+    };
 
     useEffect(() => {
         showStatusTests();
         showStatusGroups();
         showStatusQuestions(); 
         showStatusTestGroups();
-        showStatusUserGroup()
-    }, [statusTest, statusGroup, statusQuestion, statusTestGroup, statusUserGroup]);
+        showStatusUserGroup();
+        showStatusQuestionTest();
+    }, [statusTest, statusGroup, statusQuestion, statusTestGroup, statusUserGroup, statusQuestionTest]);
 
     return <>{contextHolder}</>;
 }

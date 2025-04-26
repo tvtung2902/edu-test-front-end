@@ -15,6 +15,13 @@ export interface ApiGetResponse<T> {
     status: number;
 }
 
+export interface ApiGetListNonPaginationResponse<T> {
+    message: string;
+    response: T[];
+    status: number;
+}
+
+
 
 export interface ApiResponse {
     message: string;

@@ -1,5 +1,5 @@
 'use client'
-import { QuestionForm } from "@/components/forms/question-form";
+import QuestionForm from "@/components/forms/question-form";
 import { RootState } from "@/redux/store/store";
 import { fetchCategories } from "@/redux/features/categorySlice";
 import { AppDispatch } from "@/redux/store/store";
@@ -23,7 +23,8 @@ export default function ContentEditPage({id}: {id: string}) {
 
     return (
         <>
-            <QuestionForm key={question?.id} initialData={question} onSubmit={() => {}} categories={categories} isEdit={true} />
+            <QuestionForm key={question?.id} initialData={question} 
+            onSubmit={() => {}} categories={categories} isEdit={true} type="QUESTION_PAGE" />
         </>
     )
 }
